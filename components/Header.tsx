@@ -1,5 +1,5 @@
 import React from 'react';
-import { PlusCircle, Search } from 'lucide-react';
+import { PlusCircle, Search, ExternalLink } from 'lucide-react';
 import { JIT_LOGO_BASE64 } from '../assets/jit_logo';
 
 interface HeaderProps {
@@ -39,7 +39,16 @@ const Header: React.FC<HeaderProps> = ({ onAddProjectClick, searchTerm, onSearch
             </div>
           </div>
           
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-3">
+             <a
+              href="https://jitsriperumbudur.org/studentslogin/index.php"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-[#192F59] bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#192F59] focus:ring-offset-2 transition-all duration-200 flex-shrink-0"
+            >
+                <ExternalLink size={16} />
+                <span className="hidden sm:inline">Student Portal</span>
+            </a>
             <button
               onClick={onAddProjectClick}
               className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-[#192F59] rounded-lg shadow-md hover:bg-[#101f3c] focus:outline-none focus:ring-2 focus:ring-[#192F59] focus:ring-offset-2 transition-all duration-200 flex-shrink-0"

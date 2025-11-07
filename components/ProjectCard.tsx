@@ -185,13 +185,18 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit, onDelete, sh
             </div>
           )}
           <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
-            <div className="flex items-center">
-              <Calendar size={14} className="mr-2"/>
-              Submitted: {formattedDate}
-            </div>
-            <div className="flex items-center" title={`${viewCount || 0} views`}>
-              <Eye size={14} className="mr-1.5" />
-              {viewCount || 0}
+            <p className="text-gray-400 font-mono text-[11px] truncate" title={id}>
+                ID: {id}
+            </p>
+            <div className="flex items-center gap-4">
+                <div className="flex items-center">
+                    <Calendar size={14} className="mr-1.5"/>
+                    {formattedDate}
+                </div>
+                <div className="flex items-center" title={`${viewCount || 0} views`}>
+                    <Eye size={14} className="mr-1.5" />
+                    {viewCount || 0}
+                </div>
             </div>
           </div>
           <div className="flex items-center justify-between">
