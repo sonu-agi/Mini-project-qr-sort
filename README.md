@@ -1,12 +1,11 @@
-<div align="center">
+<div align="left">
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 <img src="https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square">
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
-
 </div>
 
-
+<div align="center">
 ## Contributors ✨
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
