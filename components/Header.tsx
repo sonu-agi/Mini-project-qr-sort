@@ -1,5 +1,5 @@
 import React from 'react';
-import { PlusCircle, Search, ExternalLink } from 'lucide-react';
+import { PlusCircle, Search, ExternalLink, Briefcase } from 'lucide-react';
 import { JIT_LOGO_BASE64 } from '../assets/jit_logo';
 
 interface HeaderProps {
@@ -48,6 +48,15 @@ const Header: React.FC<HeaderProps> = ({ onAddProjectClick, searchTerm, onSearch
             >
                 <ExternalLink size={16} />
                 <span className="hidden sm:inline">Student Portal</span>
+            </a>
+             <a
+              href="https://jitsriperumbudur.org/stafflogin/login.php?done=/stafflogin/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden md:flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-[#192F59] bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#192F59] focus:ring-offset-2 transition-all duration-200 flex-shrink-0"
+            >
+                <Briefcase size={16} />
+                <span className="hidden sm:inline">Faculty Portal</span>
             </a>
             <button
               onClick={onAddProjectClick}

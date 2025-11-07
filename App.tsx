@@ -8,6 +8,7 @@ import AddProjectForm from './components/AddProjectForm';
 import BestProjects from './components/BestProjects';
 import Tabs from './components/Tabs';
 import Chatbot from './components/Chatbot';
+import Footer from './components/Footer';
 
 const filterAndSortProjects = (
   projects: Project[],
@@ -179,14 +180,14 @@ const App: React.FC = () => {
   }, [activeTab, filters, sortedAndFilteredProjects, recentProjects, mostViewedProjects, projects, showQrOnHover, sortOption, currentUserRegNo, handleIncrementViewCount]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header 
         onAddProjectClick={handleOpenAddForm} 
         searchTerm={searchTerm} 
         onSearchChange={setSearchTerm}
       />
       
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow">
         <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-8 gap-4">
           <div>
             <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-2">Student Project Showcase</h1>
@@ -262,6 +263,7 @@ const App: React.FC = () => {
         />
       )}
       <Chatbot allProjects={projects} />
+      <Footer />
     </div>
   );
 };
