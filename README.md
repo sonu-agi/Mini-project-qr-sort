@@ -33,7 +33,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
-
+## This project is sponsored by Jeppiaar Institute of Technology
 <img width="700" height="275" alt="GHBanner" src="jit_img.png" />
 </div>
 
