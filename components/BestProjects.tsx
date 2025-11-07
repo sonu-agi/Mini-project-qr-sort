@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Project } from '../types';
 import { selectBestProjects } from '../services/geminiService';
@@ -92,17 +91,17 @@ const BestProjects: React.FC<BestProjectsProps> = ({ allProjects }) => {
   }, [fetchBestProjects]);
 
   const renderLoading = () => (
-    <div className="flex flex-col items-center justify-center text-center p-12 bg-gray-50 dark:bg-gray-800 rounded-lg border-2 border-dashed dark:border-gray-600">
+    <div className="flex flex-col items-center justify-center text-center p-12 bg-gray-50 rounded-lg border-2 border-dashed">
       <BrainCircuit size={48} className="text-blue-500 animate-pulse" />
-      <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mt-4">Analyzing Projects...</h3>
-      <p className="text-gray-500 dark:text-gray-400 mt-2">Our AI is selecting the most innovative projects from last month. Please wait.</p>
+      <h3 className="text-xl font-semibold text-gray-700 mt-4">Analyzing Projects...</h3>
+      <p className="text-gray-500 mt-2">Our AI is selecting the most innovative projects from last month. Please wait.</p>
     </div>
   );
   
   const renderEmptyState = () => (
      <div className="text-center py-16">
-        <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300">No Projects Submitted Last Month</h3>
-        <p className="text-gray-500 dark:text-gray-400 mt-2">There's no data to select the "Projects of the Month". Check back next month!</p>
+        <h3 className="text-xl font-semibold text-gray-700">No Projects Submitted Last Month</h3>
+        <p className="text-gray-500 mt-2">There's no data to select the "Projects of the Month". Check back next month!</p>
       </div>
   )
 
@@ -112,14 +111,14 @@ const BestProjects: React.FC<BestProjectsProps> = ({ allProjects }) => {
 
   return (
     <div>
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md mb-8 border border-blue-200 dark:border-blue-700">
+      <div className="bg-white p-6 rounded-lg shadow-md mb-8 border border-blue-200">
         <div className="flex items-center">
-            <Award size={32} className="text-blue-600 dark:text-blue-400 mr-4"/>
+            <Award size={32} className="text-blue-600 mr-4"/>
             <div>
-              <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
+              <h2 className="text-2xl font-bold text-gray-800">
                 Top Projects for {previousMonthName} {yearOfPreviousMonth}
               </h2>
-              <p className="text-gray-600 dark:text-gray-400">Selected by our AI algorithm for innovation and impact.</p>
+              <p className="text-gray-600">Selected by our AI algorithm for innovation and impact.</p>
             </div>
         </div>
       </div>
@@ -127,7 +126,7 @@ const BestProjects: React.FC<BestProjectsProps> = ({ allProjects }) => {
       <div className="space-y-12">
         {bestProjectsByClass.map(result => (
           <div key={result.classKey}>
-            <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200 border-b-2 border-blue-500 dark:border-blue-400 pb-2 mb-6">
+            <h3 className="text-xl font-semibold text-gray-800 border-b-2 border-blue-500 pb-2 mb-6">
               {result.classKey}
             </h3>
             {result.error && <p className="text-red-500">{result.error}</p>}
@@ -137,10 +136,10 @@ const BestProjects: React.FC<BestProjectsProps> = ({ allProjects }) => {
                 const justification = result.justifications.find(j => j.projectId === project.id)?.justification;
                 return (
                   <div key={project.id} className="flex flex-col">
-                    <ProjectCard project={project} />
+                    <ProjectCard project={project} currentUserRegNo={''} />
                     {justification && (
-                      <div className="bg-blue-50 dark:bg-blue-900/50 border-t-4 border-blue-500 dark:border-blue-400 p-4 mt-[-1px] rounded-b-xl">
-                        <p className="text-sm text-blue-900 dark:text-blue-200"><strong className="font-semibold">AI Justification:</strong> {justification}</p>
+                      <div className="bg-blue-50 border-t-4 border-blue-500 p-4 mt-[-1px] rounded-b-xl">
+                        <p className="text-sm text-blue-900"><strong className="font-semibold">AI Justification:</strong> {justification}</p>
                       </div>
                     )}
                   </div>

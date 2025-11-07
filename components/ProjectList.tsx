@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Project } from '../types';
 import ProjectCard from './ProjectCard';
@@ -15,8 +14,8 @@ const ProjectList: React.FC<ProjectListProps> = ({ projects, onEdit, onDelete, s
   if (projects.length === 0) {
     return (
       <div className="text-center py-16">
-        <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300">No Projects Found</h3>
-        <p className="text-gray-500 dark:text-gray-400 mt-2">Try adjusting your filters or check back later!</p>
+        <h3 className="text-xl font-semibold text-gray-700">No Projects Found</h3>
+        <p className="text-gray-500 mt-2">Try adjusting your filters or check back later!</p>
       </div>
     );
   }

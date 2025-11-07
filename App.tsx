@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { Project, FilterOptions, Tab, SortOption } from './types';
 import { MOCK_PROJECTS } from './constants';
 import Header from './components/Header';
@@ -70,23 +70,6 @@ const App: React.FC = () => {
   const [sortOption, setSortOption] = useState<SortOption>('newest');
   const [currentUserRegNo, setCurrentUserRegNo] = useState<string>('');
   const [loginInput, setLoginInput] = useState<string>('');
-  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'light' || savedTheme === 'dark') {
-      return savedTheme;
-    }
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-  });
-
-  useEffect(() => {
-    const root = window.document.documentElement;
-    if (theme === 'dark') {
-      root.classList.add('dark');
-    } else {
-      root.classList.remove('dark');
-    }
-    localStorage.setItem('theme', theme);
-  }, [theme]);
 
   const handleOpenAddForm = () => {
     setEditingProject(null);
@@ -170,18 +153,16 @@ const App: React.FC = () => {
         onAddProjectClick={handleOpenAddForm} 
         searchTerm={searchTerm} 
         onSearchChange={setSearchTerm}
-        theme={theme}
-        setTheme={setTheme}
       />
       
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-8 gap-4">
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-800 dark:text-gray-100 mb-2">Student Project Showcase</h1>
-            <p className="text-gray-600 dark:text-gray-400">Explore, share, and get inspired by projects from our talented students.</p>
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-2">Student Project Showcase</h1>
+            <p className="text-gray-600">Explore, share, and get inspired by projects from our talented students.</p>
           </div>
-          <div className="flex items-center space-x-2 bg-white dark:bg-gray-800 p-2 rounded-lg shadow-sm border dark:border-gray-700 flex-shrink-0">
-            <label htmlFor="qr-toggle" className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer select-none">
+          <div className="flex items-center space-x-2 bg-white p-2 rounded-lg shadow-sm border flex-shrink-0">
+            <label htmlFor="qr-toggle" className="text-sm font-medium text-gray-700 cursor-pointer select-none">
               Show QR on Hover
             </label>
             <button
@@ -190,8 +171,8 @@ const App: React.FC = () => {
               id="qr-toggle"
               onClick={() => setShowQrOnHover(!showQrOnHover)}
               className={`${
-                  showQrOnHover ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-600'
-              } relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900`}
+                  showQrOnHover ? 'bg-blue-600' : 'bg-gray-200'
+              } relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2`}
             >
               <span
                 aria-hidden="true"
@@ -203,11 +184,11 @@ const App: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-yellow-50 dark:bg-yellow-900/30 border-l-4 border-yellow-400 dark:border-yellow-500 p-4 rounded-r-lg mb-8">
+        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg mb-8">
             <div className="flex">
                 <div className="ml-3">
-                    <p className="text-sm text-yellow-700 dark:text-yellow-200">
-                    <strong>Note:</strong> This is a demo. To test the edit/delete permissions, enter a student's Registration Number from a project below (e.g., JIT2020CSE001).
+                    <p className="text-sm text-yellow-700">
+                    <strong>Note:</strong> This is a demo. To test the edit/delete permissions, enter a student's Registration Number from a project below (e.g., JIT2021IT045).
                     </p>
                     {!currentUserRegNo ? (
                         <div className="mt-3 flex gap-2">
@@ -217,7 +198,7 @@ const App: React.FC = () => {
                                 onChange={(e) => setLoginInput(e.target.value)}
                                 onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
                                 placeholder="Enter Registration No."
-                                className="block w-full max-w-xs pl-3 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                className="block w-full max-w-xs pl-3 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                             />
                             <button onClick={handleLogin} className="px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700">
                                 Simulate Login
@@ -225,8 +206,8 @@ const App: React.FC = () => {
                         </div>
                     ) : (
                         <div className="mt-3 flex items-center gap-4">
-                            <p className="text-sm font-medium text-gray-800 dark:text-gray-200">Logged in as: <strong className="text-green-600 dark:text-green-400">{currentUserRegNo}</strong></p>
-                            <button onClick={handleLogout} className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline">
+                            <p className="text-sm font-medium text-gray-800">Logged in as: <strong className="text-green-600">{currentUserRegNo}</strong></p>
+                            <button onClick={handleLogout} className="text-sm font-medium text-blue-600 hover:underline">
                                 Logout
                             </button>
                         </div>
