@@ -1,0 +1,5 @@
+{
+  "name": "College Project Showcase QR Generator",
+  "description": "A web application for students to upload their mini-projects, generate unique QR codes for sharing, and showcase their work. Projects can be filtered by year, department, and section. An AI-powered feature highlights the best projects each month.",
+  "requestFramePermissions": []
+}
