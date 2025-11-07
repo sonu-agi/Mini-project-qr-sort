@@ -13,7 +13,7 @@ const twoMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 2, 10);
 export const MOCK_PROJECTS: Project[] = [
   {
     id: '1',
-    students: [{ name: 'Alice Johnson', year: '4', department: 'CSE', section: 'A' }],
+    students: [{ name: 'Alice Johnson', registrationNumber: 'JIT2020CSE001', year: '4', department: 'CSE', section: 'A' }],
     projectTitle: 'AI-Powered Chess Engine',
     description: 'A deep learning model trained to play chess at a grandmaster level. Built with Python and TensorFlow.',
     githubLink: 'https://github.com/example/chess',
@@ -33,7 +33,7 @@ export const MOCK_PROJECTS: Project[] = [
   },
   {
     id: '2',
-    students: [{ name: 'Bob Williams', year: '3', department: 'ECE', section: 'B' }],
+    students: [{ name: 'Bob Williams', registrationNumber: 'JIT2021ECE015', year: '3', department: 'ECE', section: 'B' }],
     projectTitle: 'IoT Weather Station',
     description: 'A solar-powered weather station that uploads real-time data to a web dashboard using Raspberry Pi.',
     githubLink: 'https://github.com/example/weather',
@@ -51,8 +51,8 @@ export const MOCK_PROJECTS: Project[] = [
   {
     id: '3',
     students: [
-        { name: 'Charlie Brown', year: '4', department: 'MECH', section: 'A' },
-        { name: 'Diana Prince', year: '3', department: 'IT', section: 'C' }
+        { name: 'Charlie Brown', registrationNumber: 'JIT2020MECH023', year: '4', department: 'MECH', section: 'A' },
+        { name: 'Diana Prince', registrationNumber: 'JIT2021IT045', year: '3', department: 'IT', section: 'C' }
     ],
     projectTitle: 'Automated Robotic Arm',
     description: 'A 3D-printed robotic arm capable of sorting objects by color using computer vision. A cross-departmental effort.',
@@ -68,7 +68,7 @@ export const MOCK_PROJECTS: Project[] = [
   },
     {
     id: '4',
-    students: [{ name: 'Diana Prince', year: '3', department: 'IT', section: 'C' }],
+    students: [{ name: 'Diana Prince', registrationNumber: 'JIT2021IT045', year: '3', department: 'IT', section: 'C' }],
     projectTitle: 'Bridge Stress Analysis Simulation',
     description: 'Finite element analysis software to simulate stress on various bridge designs under different load conditions.',
     publicationLink: 'https://example.com/publication2',
@@ -85,7 +85,7 @@ export const MOCK_PROJECTS: Project[] = [
   },
   {
     id: '5',
-    students: [{ name: 'Eve Adams', year: '4', department: 'CSBS', section: 'A' }],
+    students: [{ name: 'Eve Adams', registrationNumber: 'JIT2020CSBS009', year: '4', department: 'CSBS', section: 'A' }],
     projectTitle: 'React Native Social App',
     description: 'A cross-platform social media application for sharing short-form video content, built with React Native and Firebase.',
     githubLink: 'https://github.com/example/social-app',
@@ -100,7 +100,7 @@ export const MOCK_PROJECTS: Project[] = [
   },
   {
     id: '6',
-    students: [{ name: 'Frank Castle', year: '3', department: 'ECE', section: 'B' }],
+    students: [{ name: 'Frank Castle', registrationNumber: 'JIT2021ECE018', year: '3', department: 'ECE', section: 'B' }],
     projectTitle: 'Advanced Signal Processing Filter',
     description: 'Developed a novel DSP filter for noise cancellation in audio signals, improving clarity by over 30%.',
     technologies: [],
@@ -116,8 +116,8 @@ export const MOCK_PROJECTS: Project[] = [
    {
     id: '7',
     students: [
-        { name: 'Grace Hopper', year: '4', department: 'CSE', section: 'A' },
-        { name: 'Henry Pym', year: '4', department: 'CSE', section: 'A' }
+        { name: 'Grace Hopper', registrationNumber: 'JIT2020CSE002', year: '4', department: 'CSE', section: 'A' },
+        { name: 'Henry Pym', registrationNumber: 'JIT2020CSE003', year: '4', department: 'CSE', section: 'A' }
     ],
     projectTitle: 'Compiler for a new language',
     description: 'A fully functional compiler for a custom-designed programming language focused on parallel computing.',
@@ -133,7 +133,7 @@ export const MOCK_PROJECTS: Project[] = [
   },
   {
     id: '8',
-    students: [{ name: 'Henry Pym', year: '4', department: 'MECH', section: 'A' }],
+    students: [{ name: 'Henry Pym', registrationNumber: 'JIT2020MECH031', year: '4', department: 'MECH', section: 'A' }],
     projectTitle: 'Ant-Sized Drone',
     description: 'Micro-drone design for surveillance and environmental monitoring in tight spaces, with autonomous navigation.',
     skills: ['Drone Design', 'Autonomous Navigation', 'Miniaturization'],

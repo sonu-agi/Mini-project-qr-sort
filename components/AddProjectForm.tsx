@@ -85,7 +85,7 @@ const AddProjectForm: React.FC<ProjectFormProps> = ({ onSave, onClose, projectTo
   const [year, setYear] = useState(YEARS[0]);
   const [department, setDepartment] = useState(DEPARTMENTS[0]);
   const [section, setSection] = useState(SECTIONS[0]);
-  const [students, setStudents] = useState<Student[]>([{ name: '', year: YEARS[0], department: DEPARTMENTS[0], section: SECTIONS[0] }]);
+  const [students, setStudents] = useState<Student[]>([{ name: '', registrationNumber: '', year: YEARS[0], department: DEPARTMENTS[0], section: SECTIONS[0] }]);
   const [faculty, setFaculty] = useState<Faculty[]>([]);
   const [documents, setDocuments] = useState<DocumentFile[]>([]);
   const [technologies, setTechnologies] = useState<string[]>([]);
@@ -120,7 +120,7 @@ const AddProjectForm: React.FC<ProjectFormProps> = ({ onSave, onClose, projectTo
     setStudents(newStudents);
   };
   
-  const addStudent = () => setStudents([...students, { name: '', year: YEARS[0], department: DEPARTMENTS[0], section: SECTIONS[0] }]);
+  const addStudent = () => setStudents([...students, { name: '', registrationNumber: '', year: YEARS[0], department: DEPARTMENTS[0], section: SECTIONS[0] }]);
   const removeStudent = (index: number) => setStudents(students.filter((_, i) => i !== index));
 
   const handleFacultyChange = (index: number, field: keyof Faculty, value: string) => {
@@ -143,10 +143,10 @@ const AddProjectForm: React.FC<ProjectFormProps> = ({ onSave, onClose, projectTo
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (projectTitle && description && students.every(s => s.name)) {
+    if (projectTitle && description && students.every(s => s.name && s.registrationNumber)) {
         const projectData = {
             projectTitle, description, githubLink, publicationLink, projectType, year, department, section,
-            students: students.filter(s => s.name.trim() !== ''),
+            students: students.filter(s => s.name.trim() !== '' && s.registrationNumber.trim() !== ''),
             faculty: faculty.filter(f => f.name.trim() !== ''),
             documents: documents.filter(d => d.name.trim() !== '' && d.url.trim() !== ''),
             technologies,
@@ -156,13 +156,13 @@ const AddProjectForm: React.FC<ProjectFormProps> = ({ onSave, onClose, projectTo
         };
       onSave(projectData, projectToEdit?.id);
     } else {
-      alert('Please fill in project title, description, and all student names.');
+      alert('Please fill in project title, description, and all student names and registration numbers.');
     }
   };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-60 dark:bg-opacity-80 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col">
         <div className="flex justify-between items-center p-6 border-b dark:border-gray-700">
           <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">{projectToEdit ? 'Edit Project' : 'Submit a New Project'}</h2>
           <button onClick={onClose} className="text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-100">
@@ -242,8 +242,9 @@ const AddProjectForm: React.FC<ProjectFormProps> = ({ onSave, onClose, projectTo
             <div className="space-y-4 border-b dark:border-gray-700 pb-6">
                <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200">Students *</h3>
                 {students.map((student, index) => (
-                    <div key={index} className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-md border dark:border-gray-600 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 items-end">
+                    <div key={index} className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-md border dark:border-gray-600 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-3 items-end">
                        <input value={student.name} onChange={(e) => handleStudentChange(index, 'name', e.target.value)} placeholder="Student Name" className="w-full border-gray-300 rounded-md shadow-sm md:col-span-2 bg-white dark:bg-gray-700 dark:border-gray-600 text-gray-800 dark:text-gray-200" required />
+                       <input value={student.registrationNumber} onChange={(e) => handleStudentChange(index, 'registrationNumber', e.target.value)} placeholder="Reg. Number" className="w-full border-gray-300 rounded-md shadow-sm bg-white dark:bg-gray-700 dark:border-gray-600 text-gray-800 dark:text-gray-200" required />
                        <select value={student.year} onChange={(e) => handleStudentChange(index, 'year', e.target.value)} className="w-full border-gray-300 rounded-md shadow-sm bg-white dark:bg-gray-700 dark:border-gray-600 text-gray-800 dark:text-gray-200"><option disabled>Year</option>{YEARS.map(y => <option key={y} value={y}>{y}</option>)}</select>
                        <select value={student.department} onChange={(e) => handleStudentChange(index, 'department', e.target.value)} className="w-full border-gray-300 rounded-md shadow-sm bg-white dark:bg-gray-700 dark:border-gray-600 text-gray-800 dark:text-gray-200"><option disabled>Dept</option>{DEPARTMENTS.map(d => <option key={d} value={d}>{d}</option>)}</select>
                        <div className="flex items-center gap-2">

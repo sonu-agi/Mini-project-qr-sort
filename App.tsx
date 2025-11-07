@@ -68,6 +68,8 @@ const App: React.FC = () => {
   const [showQrOnHover, setShowQrOnHover] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOption, setSortOption] = useState<SortOption>('newest');
+  const [currentUserRegNo, setCurrentUserRegNo] = useState<string>('');
+  const [loginInput, setLoginInput] = useState<string>('');
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'light' || savedTheme === 'dark') {
@@ -124,6 +126,15 @@ const App: React.FC = () => {
       setProjects(prevProjects => prevProjects.filter(p => p.id !== id));
     }
   };
+  
+  const handleLogin = () => {
+    setCurrentUserRegNo(loginInput.trim().toUpperCase());
+  };
+
+  const handleLogout = () => {
+      setCurrentUserRegNo('');
+      setLoginInput('');
+  };
 
   const sortedAndFilteredProjects = useMemo(() => {
     return filterAndSortProjects(projects, filters, searchTerm, sortOption);
@@ -141,17 +152,17 @@ const App: React.FC = () => {
         return (
           <>
             <FilterControls filters={filters} setFilters={setFilters} sortOption={sortOption} setSortOption={setSortOption} />
-            <ProjectList projects={sortedAndFilteredProjects} onEdit={handleOpenEditForm} onDelete={handleDeleteProject} showQrOnHover={showQrOnHover} />
+            <ProjectList projects={sortedAndFilteredProjects} onEdit={handleOpenEditForm} onDelete={handleDeleteProject} showQrOnHover={showQrOnHover} currentUserRegNo={currentUserRegNo} />
           </>
         );
       case Tab.RECENT:
-        return <ProjectList projects={recentProjects} onEdit={handleOpenEditForm} onDelete={handleDeleteProject} showQrOnHover={showQrOnHover} />;
+        return <ProjectList projects={recentProjects} onEdit={handleOpenEditForm} onDelete={handleDeleteProject} showQrOnHover={showQrOnHover} currentUserRegNo={currentUserRegNo} />;
       case Tab.BEST_PROJECTS:
         return <BestProjects allProjects={projects} />;
       default:
         return null;
     }
-  }, [activeTab, filters, sortedAndFilteredProjects, recentProjects, projects, showQrOnHover, sortOption]);
+  }, [activeTab, filters, sortedAndFilteredProjects, recentProjects, projects, showQrOnHover, sortOption, currentUserRegNo]);
 
   return (
     <div className="min-h-screen">
@@ -190,6 +201,38 @@ const App: React.FC = () => {
               />
             </button>
           </div>
+        </div>
+
+        <div className="bg-yellow-50 dark:bg-yellow-900/30 border-l-4 border-yellow-400 dark:border-yellow-500 p-4 rounded-r-lg mb-8">
+            <div className="flex">
+                <div className="ml-3">
+                    <p className="text-sm text-yellow-700 dark:text-yellow-200">
+                    <strong>Note:</strong> This is a demo. To test the edit/delete permissions, enter a student's Registration Number from a project below (e.g., JIT2020CSE001).
+                    </p>
+                    {!currentUserRegNo ? (
+                        <div className="mt-3 flex gap-2">
+                            <input 
+                                type="text"
+                                value={loginInput}
+                                onChange={(e) => setLoginInput(e.target.value)}
+                                onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
+                                placeholder="Enter Registration No."
+                                className="block w-full max-w-xs pl-3 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                            />
+                            <button onClick={handleLogin} className="px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700">
+                                Simulate Login
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="mt-3 flex items-center gap-4">
+                            <p className="text-sm font-medium text-gray-800 dark:text-gray-200">Logged in as: <strong className="text-green-600 dark:text-green-400">{currentUserRegNo}</strong></p>
+                            <button onClick={handleLogout} className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline">
+                                Logout
+                            </button>
+                        </div>
+                    )}
+                </div>
+            </div>
         </div>
         
         <Tabs tabs={TABS} activeTab={activeTab} setActiveTab={setActiveTab} />

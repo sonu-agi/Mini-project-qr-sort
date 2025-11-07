@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Project } from '../types';
 import { Github, FileText, Share2, Calendar, Pencil, Users, UserCheck, Presentation, FileSpreadsheet, File, Trash2 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
@@ -9,6 +9,7 @@ interface ProjectCardProps {
   onEdit?: (project: Project) => void;
   onDelete?: (id: string) => void;
   showQrOnHover?: boolean;
+  currentUserRegNo: string;
 }
 
 const getFileIcon = (fileName: string): React.ReactNode => {
@@ -29,7 +30,7 @@ const getFileIcon = (fileName: string): React.ReactNode => {
     }
 };
 
-const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit, onDelete, showQrOnHover }) => {
+const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit, onDelete, showQrOnHover, currentUserRegNo }) => {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   const {
@@ -49,6 +50,11 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit, onDelete, sh
     faculty,
     projectType,
   } = project;
+  
+  const canModify = useMemo(() => {
+    if (!currentUserRegNo) return false;
+    return project.students.some(s => s.registrationNumber.toUpperCase() === currentUserRegNo.toUpperCase());
+  }, [project.students, currentUserRegNo]);
 
   const formattedDate = submissionDate.toLocaleDateString('en-US', {
     year: 'numeric', month: 'short', day: 'numeric'
@@ -59,7 +65,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit, onDelete, sh
   const projectDetailsString = JSON.stringify({
     id: id,
     title: project.projectTitle,
-    students: project.students.map(s => s.name),
+    students: project.students.map(s => `${s.name} (${s.registrationNumber})`),
     description: project.description,
     github: project.githubLink,
     publication: project.publicationLink,
@@ -164,7 +170,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit, onDelete, sh
               {publicationLink && ( <a href={publicationLink} target="_blank" rel="noopener noreferrer" className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"><FileText size={22} /></a> )}
             </div>
             <div className="flex items-center space-x-2">
-              {onEdit && (
+              {canModify && onEdit && (
                 <button
                   onClick={() => onEdit(project)}
                   className="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all"
@@ -180,7 +186,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit, onDelete, sh
                 <Share2 size={14} />
                 Share
               </button>
-              {onDelete && (
+              {canModify && onDelete && (
                 <button
                   onClick={() => onDelete(project.id)}
                   className="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold text-red-700 dark:text-red-400 bg-red-100 dark:bg-red-900/50 rounded-md hover:bg-red-200 dark:hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all"

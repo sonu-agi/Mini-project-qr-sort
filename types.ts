@@ -1,5 +1,6 @@
 export interface Student {
   name: string;
+  registrationNumber: string;
   year: string;
   department: string;
   section: string;
