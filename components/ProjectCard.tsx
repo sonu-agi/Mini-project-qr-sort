@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { Project } from '../types';
-import { Github, FileText, Share2, Calendar, Pencil, Users, UserCheck, Presentation, FileSpreadsheet, File } from 'lucide-react';
+import { Github, FileText, Share2, Calendar, Pencil, Users, UserCheck, Presentation, FileSpreadsheet, File, Trash2 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import ShareModal from './ShareModal';
 
 interface ProjectCardProps {
   project: Project;
   onEdit?: (project: Project) => void;
+  onDelete?: (id: string) => void;
   showQrOnHover?: boolean;
 }
 
@@ -28,7 +29,7 @@ const getFileIcon = (fileName: string): React.ReactNode => {
     }
 };
 
-const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit, showQrOnHover }) => {
+const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit, onDelete, showQrOnHover }) => {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   const {
@@ -179,6 +180,15 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit, showQrOnHove
                 <Share2 size={14} />
                 Share
               </button>
+              {onDelete && (
+                <button
+                  onClick={() => onDelete(project.id)}
+                  className="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold text-red-700 dark:text-red-400 bg-red-100 dark:bg-red-900/50 rounded-md hover:bg-red-200 dark:hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all"
+                >
+                  <Trash2 size={14} />
+                  Delete
+                </button>
+              )}
             </div>
           </div>
         </div>

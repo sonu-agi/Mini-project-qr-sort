@@ -6,10 +6,11 @@ import ProjectCard from './ProjectCard';
 interface ProjectListProps {
   projects: Project[];
   onEdit?: (project: Project) => void;
+  onDelete?: (id: string) => void;
   showQrOnHover?: boolean;
 }
 
-const ProjectList: React.FC<ProjectListProps> = ({ projects, onEdit, showQrOnHover }) => {
+const ProjectList: React.FC<ProjectListProps> = ({ projects, onEdit, onDelete, showQrOnHover }) => {
   if (projects.length === 0) {
     return (
       <div className="text-center py-16">
@@ -22,7 +23,7 @@ const ProjectList: React.FC<ProjectListProps> = ({ projects, onEdit, showQrOnHov
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       {projects.map(project => (
-        <ProjectCard key={project.id} project={project} onEdit={onEdit} showQrOnHover={showQrOnHover} />
+        <ProjectCard key={project.id} project={project} onEdit={onEdit} onDelete={onDelete} showQrOnHover={showQrOnHover} />
       ))}
     </div>
   );

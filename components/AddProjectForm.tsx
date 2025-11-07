@@ -4,7 +4,7 @@ import { DEPARTMENTS, YEARS, SECTIONS } from '../constants';
 import { X, Plus, Trash2 } from 'lucide-react';
 
 interface ProjectFormProps {
-  onSave: (project: Omit<Project, 'id' | 'submissionDate'>, id?: string) => void;
+  onSave: (project: Omit<Project, 'id'>, id?: string) => void;
   onClose: () => void;
   projectToEdit?: Project | null;
 }
@@ -91,6 +91,7 @@ const AddProjectForm: React.FC<ProjectFormProps> = ({ onSave, onClose, projectTo
   const [technologies, setTechnologies] = useState<string[]>([]);
   const [skills, setSkills] = useState<string[]>([]);
   const [keywords, setKeywords] = useState<string[]>([]);
+  const [submissionDate, setSubmissionDate] = useState<string>(new Date().toISOString().slice(0, 10));
 
 
   useEffect(() => {
@@ -109,6 +110,7 @@ const AddProjectForm: React.FC<ProjectFormProps> = ({ onSave, onClose, projectTo
       setTechnologies(projectToEdit.technologies || []);
       setSkills(projectToEdit.skills || []);
       setKeywords(projectToEdit.keywords || []);
+      setSubmissionDate(projectToEdit.submissionDate.toISOString().slice(0, 10));
     }
   }, [projectToEdit]);
 
@@ -150,6 +152,7 @@ const AddProjectForm: React.FC<ProjectFormProps> = ({ onSave, onClose, projectTo
             technologies,
             skills,
             keywords,
+            submissionDate: new Date(submissionDate + 'T00:00:00'),
         };
       onSave(projectData, projectToEdit?.id);
     } else {
@@ -192,6 +195,17 @@ const AddProjectForm: React.FC<ProjectFormProps> = ({ onSave, onClose, projectTo
                        ))}
                     </div>
                  </div>
+                 <div>
+                    <label htmlFor="submissionDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Submission Date *</label>
+                    <input 
+                        id="submissionDate"
+                        type="date" 
+                        value={submissionDate} 
+                        onChange={e => setSubmissionDate(e.target.value)} 
+                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 dark:border-gray-600 text-gray-800 dark:text-gray-200" 
+                        required 
+                    />
+                </div>
               </div>
             </div>
 

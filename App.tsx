@@ -101,7 +101,7 @@ const App: React.FC = () => {
     setEditingProject(null);
   };
 
-  const handleSaveProject = (projectData: Omit<Project, 'id' | 'submissionDate'>, id?: string) => {
+  const handleSaveProject = (projectData: Omit<Project, 'id'>, id?: string) => {
     if (id) {
       // Editing existing project
       setProjects(projects.map(p => p.id === id ? { ...projects.find(pr => pr.id === id)!, ...projectData } : p));
@@ -111,13 +111,18 @@ const App: React.FC = () => {
         {
           ...projectData,
           id: String(prev.length + 1),
-          submissionDate: new Date(),
         },
         ...prev,
       ]);
       setActiveTab(Tab.ALL_PROJECTS);
     }
     handleCloseForm();
+  };
+  
+  const handleDeleteProject = (id: string) => {
+    if (window.confirm('Are you sure you want to delete this project? This action cannot be undone.')) {
+      setProjects(prevProjects => prevProjects.filter(p => p.id !== id));
+    }
   };
 
   const sortedAndFilteredProjects = useMemo(() => {
@@ -136,11 +141,11 @@ const App: React.FC = () => {
         return (
           <>
             <FilterControls filters={filters} setFilters={setFilters} sortOption={sortOption} setSortOption={setSortOption} />
-            <ProjectList projects={sortedAndFilteredProjects} onEdit={handleOpenEditForm} showQrOnHover={showQrOnHover} />
+            <ProjectList projects={sortedAndFilteredProjects} onEdit={handleOpenEditForm} onDelete={handleDeleteProject} showQrOnHover={showQrOnHover} />
           </>
         );
       case Tab.RECENT:
-        return <ProjectList projects={recentProjects} onEdit={handleOpenEditForm} showQrOnHover={showQrOnHover} />;
+        return <ProjectList projects={recentProjects} onEdit={handleOpenEditForm} onDelete={handleDeleteProject} showQrOnHover={showQrOnHover} />;
       case Tab.BEST_PROJECTS:
         return <BestProjects allProjects={projects} />;
       default:
