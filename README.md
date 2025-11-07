@@ -43,7 +43,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <img width="700" height="275" alt="GHBanner" src="jit_img.png" />
 </div>
 
-### AI-Powered College Project Showcase
+# AI-Powered College Project Showcase
 
 
 ## Overview
