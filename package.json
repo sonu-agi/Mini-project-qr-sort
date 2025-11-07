@@ -1,24 +1,22 @@
 {
   "name": "college-project-showcase-qr-generator",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "version": "1.0.0",
+  "description": "A web application for students to upload their mini-projects, generate unique QR codes for sharing, and showcase their work. Projects can be filtered by year, department, and section. An AI-powered feature highlights the best projects each month.",
+  "main": "index.tsx",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "start": "echo \"Error: no start script specified. Open index.html in a browser to run the application.\" && exit 1",
+    "build": "echo \"Error: no build script specified. This is a CDN-based project that does not require a build step.\" && exit 1"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
-    "react-dom": "^19.2.0",
-    "react": "^19.2.0",
     "lucide-react": "^0.553.0",
-    "qrcode.react": "^4.2.0"
+    "qrcode.react": "^4.2.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
   },
   "devDependencies": {
-    "@types/node": "^22.14.0",
-    "@vitejs/plugin-react": "^5.0.0",
-    "typescript": "~5.8.2",
-    "vite": "^6.2.0"
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "typescript": "^5.5.3"
   }
 }

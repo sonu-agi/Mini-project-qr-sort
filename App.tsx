@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { Project, FilterOptions, Tab, SortOption } from './types';
 import { MOCK_PROJECTS } from './constants';
 import Header from './components/Header';
@@ -68,7 +68,23 @@ const App: React.FC = () => {
   const [showQrOnHover, setShowQrOnHover] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOption, setSortOption] = useState<SortOption>('newest');
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light' || savedTheme === 'dark') {
+      return savedTheme;
+    }
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  });
 
+  useEffect(() => {
+    const root = window.document.documentElement;
+    if (theme === 'dark') {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
+    }
+    localStorage.setItem('theme', theme);
+  }, [theme]);
 
   const handleOpenAddForm = () => {
     setEditingProject(null);
@@ -133,21 +149,23 @@ const App: React.FC = () => {
   }, [activeTab, filters, sortedAndFilteredProjects, recentProjects, projects, showQrOnHover, sortOption]);
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen">
       <Header 
         onAddProjectClick={handleOpenAddForm} 
         searchTerm={searchTerm} 
-        onSearchChange={setSearchTerm} 
+        onSearchChange={setSearchTerm}
+        theme={theme}
+        setTheme={setTheme}
       />
       
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-8 gap-4">
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-2">Student Project Showcase</h1>
-            <p className="text-gray-600">Explore, share, and get inspired by projects from our talented students.</p>
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-800 dark:text-gray-100 mb-2">Student Project Showcase</h1>
+            <p className="text-gray-600 dark:text-gray-400">Explore, share, and get inspired by projects from our talented students.</p>
           </div>
-          <div className="flex items-center space-x-2 bg-white p-2 rounded-lg shadow-sm border flex-shrink-0">
-            <label htmlFor="qr-toggle" className="text-sm font-medium text-gray-700 cursor-pointer select-none">
+          <div className="flex items-center space-x-2 bg-white dark:bg-gray-800 p-2 rounded-lg shadow-sm border dark:border-gray-700 flex-shrink-0">
+            <label htmlFor="qr-toggle" className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer select-none">
               Show QR on Hover
             </label>
             <button
@@ -156,8 +174,8 @@ const App: React.FC = () => {
               id="qr-toggle"
               onClick={() => setShowQrOnHover(!showQrOnHover)}
               className={`${
-                  showQrOnHover ? 'bg-blue-600' : 'bg-gray-200'
-              } relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2`}
+                  showQrOnHover ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-600'
+              } relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900`}
             >
               <span
                 aria-hidden="true"
