@@ -64,20 +64,21 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 **Advanced Discovery Tools:**
 
-*Multi-Faceted Filtering:* Users can filter the entire project list by academic year, department, section, project category (e.g., AI/ML, IoT), and status (Completed, In Progress).
+- *Multi-Faceted Filtering:* Users can filter the entire project list by academic year, department, section, project category (e.g., AI/ML, IoT), and status (Completed, In Progress).
 
-*Sorting Options:* Projects can be sorted by submission date or alphabetically by title.
+- *Sorting Options:* Projects can be sorted by submission date or alphabetically by title.
 
-*Global Search:* A powerful search bar allows for full-text search across project titles, descriptions, and keywords.
+- *Global Search:* A powerful search bar allows for full-text search across project titles, descriptions, and keywords.
 
 **Easy & Modern Sharing:**
-*Unique Project URLs:* Each project gets its own unique URL for direct linking.
 
-*QR Code Generation:* A QR code is automatically generated for every project, perfect for sharing in presentations or on physical posters. Users can also toggle a "Show QR on Hover" feature for quick access.
+- *Unique Project URLs:* Each project gets its own unique URL for direct linking.
 
-*Share Modal:* A built-in sharing dialog provides the QR code, a one-click "Copy Link" button, and a "Share on LinkedIn" button.
+- *QR Code Generation:* A QR code is automatically generated for every project, perfect for sharing in presentations or on physical posters. Users can also toggle a "Show QR on Hover" feature for quick access.
 
-*Engagement Tracking:* A view counter on each project card tracks how many times a project has been viewed, highlighting popular entries.
+- *Share Modal:* A built-in sharing dialog provides the QR code, a one-click "Copy Link" button, and a "Share on LinkedIn" button.
+
+- *Engagement Tracking:* A view counter on each project card tracks how many times a project has been viewed, highlighting popular entries.
 
 
 ## AI-Powered Features (Powered by the Google Gemini API)
@@ -113,9 +114,13 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 ## Technology Stack
 *Frontend Framework:* React with TypeScript
+
 *Styling:* Tailwind CSS for a responsive, utility-first design.
+
 *AI Integration:* @google/genai library for all interactions with the Google Gemini API.
+
 *UI Components:* lucide-react for icons and qrcode.react for QR code generation.
+
 *Architecture:* A modern, client-side application that runs directly in the browser without a backend or build step, using ES Modules and an importmap to load dependencies from a CDN.
 
 
