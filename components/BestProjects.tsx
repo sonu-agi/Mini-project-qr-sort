@@ -6,6 +6,7 @@ import { Award, BrainCircuit } from 'lucide-react';
 
 interface BestProjectsProps {
   allProjects: Project[];
+  onView: (id: string) => void;
 }
 
 interface BestProjectResult {
@@ -15,7 +16,7 @@ interface BestProjectResult {
   error?: string;
 }
 
-const BestProjects: React.FC<BestProjectsProps> = ({ allProjects }) => {
+const BestProjects: React.FC<BestProjectsProps> = ({ allProjects, onView }) => {
   const [bestProjectsByClass, setBestProjectsByClass] = useState<BestProjectResult[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -92,7 +93,7 @@ const BestProjects: React.FC<BestProjectsProps> = ({ allProjects }) => {
 
   const renderLoading = () => (
     <div className="flex flex-col items-center justify-center text-center p-12 bg-gray-50 rounded-lg border-2 border-dashed">
-      <BrainCircuit size={48} className="text-blue-500 animate-pulse" />
+      <BrainCircuit size={48} className="text-[#192F59] animate-pulse" />
       <h3 className="text-xl font-semibold text-gray-700 mt-4">Analyzing Projects...</h3>
       <p className="text-gray-500 mt-2">Our AI is selecting the most innovative projects from last month. Please wait.</p>
     </div>
@@ -111,9 +112,9 @@ const BestProjects: React.FC<BestProjectsProps> = ({ allProjects }) => {
 
   return (
     <div>
-      <div className="bg-white p-6 rounded-lg shadow-md mb-8 border border-blue-200">
+      <div className="bg-white p-6 rounded-lg shadow-md mb-8 border border-gray-200">
         <div className="flex items-center">
-            <Award size={32} className="text-blue-600 mr-4"/>
+            <Award size={32} className="text-[#192F59] mr-4"/>
             <div>
               <h2 className="text-2xl font-bold text-gray-800">
                 Top Projects for {previousMonthName} {yearOfPreviousMonth}
@@ -126,7 +127,7 @@ const BestProjects: React.FC<BestProjectsProps> = ({ allProjects }) => {
       <div className="space-y-12">
         {bestProjectsByClass.map(result => (
           <div key={result.classKey}>
-            <h3 className="text-xl font-semibold text-gray-800 border-b-2 border-blue-500 pb-2 mb-6">
+            <h3 className="text-xl font-semibold text-gray-800 border-b-2 border-[#192F59] pb-2 mb-6">
               {result.classKey}
             </h3>
             {result.error && <p className="text-red-500">{result.error}</p>}
@@ -136,10 +137,10 @@ const BestProjects: React.FC<BestProjectsProps> = ({ allProjects }) => {
                 const justification = result.justifications.find(j => j.projectId === project.id)?.justification;
                 return (
                   <div key={project.id} className="flex flex-col">
-                    <ProjectCard project={project} currentUserRegNo={''} />
+                    <ProjectCard project={project} currentUserRegNo={''} onView={onView} />
                     {justification && (
-                      <div className="bg-blue-50 border-t-4 border-blue-500 p-4 mt-[-1px] rounded-b-xl">
-                        <p className="text-sm text-blue-900"><strong className="font-semibold">AI Justification:</strong> {justification}</p>
+                      <div className="bg-gray-50 border-t-4 border-[#192F59] p-4 mt-[-1px] rounded-b-xl">
+                        <p className="text-sm text-gray-900"><strong className="font-semibold">AI Justification:</strong> {justification}</p>
                       </div>
                     )}
                   </div>

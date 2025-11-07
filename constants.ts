@@ -1,8 +1,10 @@
-import { Project } from './types';
+import { Project, ProjectStatus, ProjectCategory } from './types';
 
 export const DEPARTMENTS = ['CSE', 'IT', 'AIDS', 'CSBS', 'ECE', 'MECH'];
 export const YEARS = ['1', '2', '3', '4'];
 export const SECTIONS = ['A', 'B', 'C', 'D', 'N/A'];
+export const PROJECT_STATUSES: ProjectStatus[] = ['In Progress', 'Completed', 'On Hold'];
+export const PROJECT_CATEGORIES: ProjectCategory[] = ['Web Development', 'AI / ML', 'Internet of Things (IoT)', 'Mobile Development', 'Hardware & Robotics', 'Data Science', 'Other'];
 
 
 // Get dates for the last two months to ensure "Project of the Month" has data
@@ -30,6 +32,9 @@ export const MOCK_PROJECTS: Project[] = [
     submissionDate: lastMonth,
     faculty: [{ name: 'Dr. Alan Turing', department: 'CSE' }],
     projectType: 'College',
+    status: 'Completed',
+    category: 'AI / ML',
+    viewCount: 150,
   },
   {
     id: '2',
@@ -47,6 +52,9 @@ export const MOCK_PROJECTS: Project[] = [
     submissionDate: new Date(new Date().setDate(now.getDate() - 5)),
     faculty: [],
     projectType: 'Personal',
+    status: 'In Progress',
+    category: 'Internet of Things (IoT)',
+    viewCount: 210,
   },
   {
     id: '3',
@@ -65,6 +73,9 @@ export const MOCK_PROJECTS: Project[] = [
     submissionDate: lastMonth,
     faculty: [{ name: 'Prof. Ada Lovelace', department: 'MECH'}],
     projectType: 'College',
+    status: 'Completed',
+    category: 'Hardware & Robotics',
+    viewCount: 305,
   },
     {
     id: '4',
@@ -82,6 +93,9 @@ export const MOCK_PROJECTS: Project[] = [
     submissionDate: new Date(new Date().setDate(now.getDate() - 10)),
     faculty: [],
     projectType: 'Personal',
+    status: 'Completed',
+    category: 'Data Science',
+    viewCount: 180,
   },
   {
     id: '5',
@@ -97,6 +111,9 @@ export const MOCK_PROJECTS: Project[] = [
     submissionDate: lastMonth,
     faculty: [],
     projectType: 'Personal',
+    status: 'In Progress',
+    category: 'Mobile Development',
+    viewCount: 250,
   },
   {
     id: '6',
@@ -112,6 +129,9 @@ export const MOCK_PROJECTS: Project[] = [
     submissionDate: lastMonth,
     faculty: [{ name: 'Dr. Nikola Tesla', department: 'ECE' }],
     projectType: 'College',
+    status: 'Completed',
+    category: 'Hardware & Robotics',
+    viewCount: 120,
   },
    {
     id: '7',
@@ -130,6 +150,9 @@ export const MOCK_PROJECTS: Project[] = [
     submissionDate: lastMonth,
     faculty: [{ name: 'Dr. Alan Turing', department: 'CSE' }],
     projectType: 'College',
+    status: 'Completed',
+    category: 'Other',
+    viewCount: 400,
   },
   {
     id: '8',
@@ -143,5 +166,8 @@ export const MOCK_PROJECTS: Project[] = [
     submissionDate: twoMonthsAgo,
     faculty: [],
     projectType: 'Personal',
+    status: 'On Hold',
+    category: 'Hardware & Robotics',
+    viewCount: 95,
   }
 ];

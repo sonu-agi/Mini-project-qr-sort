@@ -11,22 +11,10 @@ interface ShareModalProps {
 const ShareModal: React.FC<ShareModalProps> = ({ project, onClose }) => {
   const studentNames = project.students.map(s => s.name).join(', ');
   
-  const projectDetailsString = JSON.stringify({
-    id: project.id,
-    title: project.projectTitle,
-    students: project.students.map(s => s.name),
-    description: project.description,
-    github: project.githubLink,
-    publication: project.publicationLink,
-    documents: project.documents?.map(d => ({ name: d.name, url: d.url })) || [],
-    technologies: project.technologies || [],
-    skills: project.skills || [],
-    keywords: project.keywords || []
-  }, null, 2);
+  const projectUrl = `${window.location.origin}${window.location.pathname}?project=${project.id}`;
 
   const shareText = `Check out this project: "${project.projectTitle}" by ${studentNames}!`;
-  // Using a placeholder URL for sharing links, as we don't have real project pages.
-  const shareUrl = project.publicationLink || project.githubLink || window.location.href;
+  const shareUrl = project.publicationLink || project.githubLink || projectUrl;
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(shareUrl).then(() => {
@@ -46,15 +34,15 @@ const ShareModal: React.FC<ShareModalProps> = ({ project, onClose }) => {
         <p className="text-gray-600 mb-6 font-medium">"{project.projectTitle}"</p>
         
         <div className="mb-6 inline-block p-4 bg-white rounded-lg border border-gray-200">
-          <QRCodeSVG value={projectDetailsString} size={200} />
+          <QRCodeSVG value={projectUrl} size={200} />
         </div>
         
-        <p className="text-sm text-gray-500 mb-6">Scan this QR code with a camera, Google Lens, or any QR app to get project details.</p>
+        <p className="text-sm text-gray-500 mb-6">Scan this QR code with a camera to get a direct link to the project.</p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <button 
             onClick={copyToClipboard}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all">
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-[#192F59] focus:ring-offset-2 transition-all">
             <Copy size={16} />
             Copy Link
           </button>

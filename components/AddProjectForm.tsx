@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Project, Student, Faculty, ProjectType, DocumentFile } from '../types';
-import { DEPARTMENTS, YEARS, SECTIONS } from '../constants';
+import { Project, Student, Faculty, ProjectType, DocumentFile, ProjectStatus, ProjectCategory } from '../types';
+import { DEPARTMENTS, YEARS, SECTIONS, PROJECT_STATUSES, PROJECT_CATEGORIES } from '../constants';
 import { X, Plus, Trash2 } from 'lucide-react';
 
 interface ProjectFormProps {
@@ -9,79 +9,14 @@ interface ProjectFormProps {
   projectToEdit?: Project | null;
 }
 
-const TagInput: React.FC<{
-    label: string;
-    tags: string[];
-    setTags: (tags: string[]) => void;
-    maxTags: number;
-    placeholder: string;
-}> = ({ label, tags, setTags, maxTags, placeholder }) => {
-    const [currentTag, setCurrentTag] = useState('');
-
-    const handleAddTag = () => {
-        const trimmedTag = currentTag.trim();
-        if (trimmedTag && tags.length < maxTags && !tags.map(t=>t.toLowerCase()).includes(trimmedTag.toLowerCase())) {
-            setTags([...tags, trimmedTag]);
-            setCurrentTag('');
-        }
-    };
-
-    const handleKeyDown = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            handleAddTag();
-        }
-    };
-
-    const removeTag = (tagToRemove: string) => {
-        setTags(tags.filter(tag => tag !== tagToRemove));
-    };
-
-    return (
-        <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">{label} ({tags.length}/{maxTags})</label>
-            <div className="flex gap-2">
-                <input
-                    type="text"
-                    value={currentTag}
-                    onChange={e => setCurrentTag(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    placeholder={placeholder}
-                    className="flex-grow border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-800"
-                    disabled={tags.length >= maxTags}
-                />
-                <button
-                    type="button"
-                    onClick={handleAddTag}
-                    className="px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-                    disabled={tags.length >= maxTags || !currentTag.trim()}
-                >
-                    Add
-                </button>
-            </div>
-            {tags.length > 0 && (
-                <div className="flex flex-wrap gap-2 pt-2">
-                    {tags.map(tag => (
-                        <span key={tag} className="flex items-center gap-1.5 bg-gray-200 text-gray-800 text-sm font-medium px-2 py-1 rounded-full">
-                            {tag}
-                            <button type="button" onClick={() => removeTag(tag)} className="text-gray-500 hover:text-gray-800">
-                                <X size={14} />
-                            </button>
-                        </span>
-                    ))}
-                </div>
-            )}
-        </div>
-    );
-};
-
-
 const AddProjectForm: React.FC<ProjectFormProps> = ({ onSave, onClose, projectToEdit }) => {
   const [projectTitle, setProjectTitle] = useState('');
   const [description, setDescription] = useState('');
   const [githubLink, setGithubLink] = useState('');
   const [publicationLink, setPublicationLink] = useState('');
   const [projectType, setProjectType] = useState<ProjectType>('College');
+  const [status, setStatus] = useState<ProjectStatus>('In Progress');
+  const [category, setCategory] = useState<ProjectCategory>('Web Development');
   const [year, setYear] = useState(YEARS[0]);
   const [department, setDepartment] = useState(DEPARTMENTS[0]);
   const [section, setSection] = useState(SECTIONS[0]);
@@ -101,6 +36,8 @@ const AddProjectForm: React.FC<ProjectFormProps> = ({ onSave, onClose, projectTo
       setGithubLink(projectToEdit.githubLink || '');
       setPublicationLink(projectToEdit.publicationLink || '');
       setProjectType(projectToEdit.projectType);
+      setStatus(projectToEdit.status);
+      setCategory(projectToEdit.category);
       setYear(projectToEdit.year);
       setDepartment(projectToEdit.department);
       setSection(projectToEdit.section);
@@ -139,19 +76,40 @@ const AddProjectForm: React.FC<ProjectFormProps> = ({ onSave, onClose, projectTo
   };
   const addDocument = () => setDocuments([...documents, { name: '', url: '' }]);
   const removeDocument = (index: number) => setDocuments(documents.filter((_, i) => i !== index));
+  
+  // Handlers for technologies, skills, and keywords
+  const createListHandler = <T,>(setter: React.Dispatch<React.SetStateAction<T[]>>, list: T[]) => ({
+    change: (index: number, value: string) => {
+      const newList = [...list];
+      newList[index] = value as unknown as T;
+      setter(newList);
+    },
+    add: (max: number, defaultValue: T) => {
+      if (list.length < max) {
+        setter([...list, defaultValue]);
+      }
+    },
+    remove: (index: number) => {
+      setter(list.filter((_, i) => i !== index));
+    }
+  });
 
+  const technologyHandlers = createListHandler(setTechnologies, technologies);
+  const skillHandlers = createListHandler(setSkills, skills);
+  const keywordHandlers = createListHandler(setKeywords, keywords);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (projectTitle && description && students.every(s => s.name && s.registrationNumber)) {
         const projectData = {
             projectTitle, description, githubLink, publicationLink, projectType, year, department, section,
+            status, category,
             students: students.filter(s => s.name.trim() !== '' && s.registrationNumber.trim() !== ''),
             faculty: faculty.filter(f => f.name.trim() !== ''),
             documents: documents.filter(d => d.name.trim() !== '' && d.url.trim() !== ''),
-            technologies,
-            skills,
-            keywords,
+            technologies: technologies.filter(t => t.trim() !== ''),
+            skills: skills.filter(s => s.trim() !== ''),
+            keywords: keywords.filter(k => k.trim() !== ''),
             submissionDate: new Date(submissionDate + 'T00:00:00'),
         };
       onSave(projectData, projectToEdit?.id);
@@ -159,6 +117,38 @@ const AddProjectForm: React.FC<ProjectFormProps> = ({ onSave, onClose, projectTo
       alert('Please fill in project title, description, and all student names and registration numbers.');
     }
   };
+  
+  const renderDynamicList = (
+    list: string[], 
+    handlers: { change: (i:number, v:string)=>void, add: (max:number, val:string)=>void, remove: (i:number)=>void },
+    max: number, 
+    label: string, 
+    placeholder: string
+  ) => (
+      <div className="space-y-2">
+        <label className="block text-sm font-medium text-gray-700">{label} ({list.length}/{max})</label>
+        {list.map((item, index) => (
+            <div key={index} className="flex items-center gap-3">
+                <input
+                    type="text"
+                    value={item}
+                    onChange={(e) => handlers.change(index, e.target.value)}
+                    placeholder={placeholder}
+                    className="flex-grow border-gray-300 rounded-md shadow-sm focus:ring-[#192F59] focus:border-[#192F59] bg-white text-gray-800"
+                />
+                <button type="button" onClick={() => handlers.remove(index)} className="p-2 text-red-600 hover:bg-red-100 rounded-md">
+                    <Trash2 size={18} />
+                </button>
+            </div>
+        ))}
+        {list.length < max && (
+            <button type="button" onClick={() => handlers.add(max, '')} className="flex items-center gap-2 text-sm font-medium text-[#192F59] hover:text-[#101f3c]">
+                <Plus size={16} /> Add {label.split('(')[0].trim()}
+            </button>
+        )}
+      </div>
+  );
+
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
@@ -176,25 +166,37 @@ const AddProjectForm: React.FC<ProjectFormProps> = ({ onSave, onClose, projectTo
               <h3 className="text-lg font-semibold text-gray-700">Project Details</h3>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Project Title *</label>
-                <input type="text" value={projectTitle} onChange={e => setProjectTitle(e.target.value)} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-800" required />
+                <input type="text" value={projectTitle} onChange={e => setProjectTitle(e.target.value)} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#192F59] focus:border-[#192F59] bg-white text-gray-800" required />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Description *</label>
-                <textarea value={description} onChange={e => setDescription(e.target.value)} rows={4} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-800" required />
+                <textarea value={description} onChange={e => setDescription(e.target.value)} rows={4} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#192F59] focus:border-[#192F59] bg-white text-gray-800" required />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <input type="url" value={githubLink} onChange={e => setGithubLink(e.target.value)} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-800" placeholder="GitHub Link (Optional)" />
-                <input type="url" value={publicationLink} onChange={e => setPublicationLink(e.target.value)} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-800" placeholder="Publication/Demo Link (Optional)" />
+                <input type="url" value={githubLink} onChange={e => setGithubLink(e.target.value)} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#192F59] focus:border-[#192F59] bg-white text-gray-800" placeholder="GitHub Link (Optional)" />
+                <input type="url" value={publicationLink} onChange={e => setPublicationLink(e.target.value)} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#192F59] focus:border-[#192F59] bg-white text-gray-800" placeholder="Publication/Demo Link (Optional)" />
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-center">
                  <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Project Type</label>
-                    <div className="flex gap-4">
+                    <div className="flex gap-4 mt-2">
                        {(['College', 'Personal'] as ProjectType[]).map(type => (
-                         <label key={type} className="flex items-center"><input type="radio" name="projectType" value={type} checked={projectType === type} onChange={() => setProjectType(type)} className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500" /> <span className="ml-2 text-sm text-gray-700">{type}</span></label>
+                         <label key={type} className="flex items-center"><input type="radio" name="projectType" value={type} checked={projectType === type} onChange={() => setProjectType(type)} className="h-4 w-4 text-[#192F59] border-gray-300 focus:ring-[#192F59]" /> <span className="ml-2 text-sm text-gray-700">{type}</span></label>
                        ))}
                     </div>
                  </div>
+                 <div>
+                    <label htmlFor="status" className="block text-sm font-medium text-gray-700">Status</label>
+                    <select id="status" value={status} onChange={e => setStatus(e.target.value as ProjectStatus)} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#192F59] focus:border-[#192F59] sm:text-sm bg-white text-gray-800">
+                      {PROJECT_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                </div>
+                 <div>
+                    <label htmlFor="category" className="block text-sm font-medium text-gray-700">Category</label>
+                    <select id="category" value={category} onChange={e => setCategory(e.target.value as ProjectCategory)} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#192F59] focus:border-[#192F59] sm:text-sm bg-white text-gray-800">
+                      {PROJECT_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                </div>
                  <div>
                     <label htmlFor="submissionDate" className="block text-sm font-medium text-gray-700">Submission Date *</label>
                     <input 
@@ -202,7 +204,7 @@ const AddProjectForm: React.FC<ProjectFormProps> = ({ onSave, onClose, projectTo
                         type="date" 
                         value={submissionDate} 
                         onChange={e => setSubmissionDate(e.target.value)} 
-                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-800" 
+                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#192F59] focus:border-[#192F59] bg-white text-gray-800" 
                         required 
                     />
                 </div>
@@ -210,32 +212,10 @@ const AddProjectForm: React.FC<ProjectFormProps> = ({ onSave, onClose, projectTo
             </div>
 
             {/* Skills & Keywords */}
-            <div className="space-y-4 border-b pb-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <TagInput 
-                        label="Technology/Components Used"
-                        tags={technologies}
-                        setTags={setTechnologies}
-                        maxTags={5}
-                        placeholder="Add a technology (e.g., React)"
-                    />
-                     <TagInput 
-                        label="Skills"
-                        tags={skills}
-                        setTags={setSkills}
-                        maxTags={5}
-                        placeholder="Add a skill (e.g., AI/ML)"
-                    />
-                </div>
-                 <div className="mt-4">
-                    <TagInput 
-                        label="Keywords"
-                        tags={keywords}
-                        setTags={setKeywords}
-                        maxTags={6}
-                        placeholder="Add a keyword (e.g., AI)"
-                    />
-                </div>
+             <div className="space-y-6 border-b pb-6">
+                {renderDynamicList(technologies, technologyHandlers, 5, 'Technology/Components Used', 'e.g., React, Python, Arduino')}
+                {renderDynamicList(skills, skillHandlers, 5, 'Skills', 'e.g., AI/ML, Web Development')}
+                {renderDynamicList(keywords, keywordHandlers, 6, 'Keywords', 'e.g., AI, Healthcare, IoT')}
             </div>
 
             {/* Students */}
@@ -253,7 +233,7 @@ const AddProjectForm: React.FC<ProjectFormProps> = ({ onSave, onClose, projectTo
                        </div>
                     </div>
                 ))}
-                <button type="button" onClick={addStudent} className="flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-800"><Plus size={16} /> Add Student</button>
+                <button type="button" onClick={addStudent} className="flex items-center gap-2 text-sm font-medium text-[#192F59] hover:text-[#101f3c]"><Plus size={16} /> Add Student</button>
             </div>
 
             {/* Faculty */}
@@ -266,7 +246,7 @@ const AddProjectForm: React.FC<ProjectFormProps> = ({ onSave, onClose, projectTo
                        <button type="button" onClick={() => removeFaculty(index)} className="p-2 text-red-600 hover:bg-red-100 rounded-md"><Trash2 size={18} /></button>
                     </div>
                 ))}
-                <button type="button" onClick={addFaculty} className="flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-800"><Plus size={16} /> Add Faculty Advisor</button>
+                <button type="button" onClick={addFaculty} className="flex items-center gap-2 text-sm font-medium text-[#192F59] hover:text-[#101f3c]"><Plus size={16} /> Add Faculty Advisor</button>
             </div>
             
             {/* Documents */}
@@ -279,7 +259,7 @@ const AddProjectForm: React.FC<ProjectFormProps> = ({ onSave, onClose, projectTo
                        <button type="button" onClick={() => removeDocument(index)} className="p-2 text-red-600 hover:bg-red-100 rounded-md"><Trash2 size={18} /></button>
                     </div>
                 ))}
-                <button type="button" onClick={addDocument} className="flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-800"><Plus size={16} /> Add Document</button>
+                <button type="button" onClick={addDocument} className="flex items-center gap-2 text-sm font-medium text-[#192F59] hover:text-[#101f3c]"><Plus size={16} /> Add Document</button>
             </div>
 
              {/* Primary Classification */}
@@ -295,7 +275,7 @@ const AddProjectForm: React.FC<ProjectFormProps> = ({ onSave, onClose, projectTo
 
           </div>
           <div className="bg-gray-50 px-8 py-4 border-t flex justify-end">
-            <button type="submit" className="px-6 py-2 font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+            <button type="submit" className="px-6 py-2 font-semibold text-white bg-[#192F59] rounded-md hover:bg-[#101f3c] focus:outline-none focus:ring-2 focus:ring-[#192F59] focus:ring-offset-2">
               {projectToEdit ? 'Update Project' : 'Submit Project'}
             </button>
           </div>

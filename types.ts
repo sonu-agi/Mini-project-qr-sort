@@ -12,6 +12,9 @@ export interface Faculty {
 }
 
 export type ProjectType = 'Personal' | 'College';
+export type ProjectStatus = 'In Progress' | 'Completed' | 'On Hold';
+export type ProjectCategory = 'Web Development' | 'AI / ML' | 'Internet of Things (IoT)' | 'Mobile Development' | 'Hardware & Robotics' | 'Data Science' | 'Other';
+
 
 export interface DocumentFile {
   name: string;
@@ -36,12 +39,17 @@ export interface Project {
   submissionDate: Date;
   faculty: Faculty[];
   projectType: ProjectType;
+  status: ProjectStatus;
+  category: ProjectCategory;
+  viewCount?: number;
 }
 
 export interface FilterOptions {
   year: string;
   department: string;
   section: string;
+  status: string;
+  category: string;
 }
 
 export type SortOption = 'newest' | 'oldest' | 'title';
@@ -49,5 +57,6 @@ export type SortOption = 'newest' | 'oldest' | 'title';
 export enum Tab {
     ALL_PROJECTS = 'All Projects',
     RECENT = 'Recent Projects',
+    MOST_VIEWED = 'Most Viewed',
     BEST_PROJECTS = "Projects of the Month"
 }

@@ -1,13 +1,15 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Project } from '../types';
-import { Github, FileText, Share2, Calendar, Pencil, Users, UserCheck, Presentation, FileSpreadsheet, File, Trash2 } from 'lucide-react';
+import { Github, FileText, Share2, Calendar, Pencil, Users, UserCheck, Presentation, FileSpreadsheet, File, Trash2, Eye, Sparkles, LoaderCircle } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import ShareModal from './ShareModal';
+import { summarizeProject } from '../services/geminiService';
 
 interface ProjectCardProps {
   project: Project;
   onEdit?: (project: Project) => void;
   onDelete?: (id: string) => void;
+  onView?: (id: string) => void;
   showQrOnHover?: boolean;
   currentUserRegNo: string;
 }
@@ -30,26 +32,19 @@ const getFileIcon = (fileName: string): React.ReactNode => {
     }
 };
 
-const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit, onDelete, showQrOnHover, currentUserRegNo }) => {
+const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit, onDelete, showQrOnHover, currentUserRegNo, onView }) => {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [summary, setSummary] = useState<string | null>(null);
+  const [isSummaryLoading, setIsSummaryLoading] = useState(false);
 
   const {
-    id,
-    projectTitle,
-    students,
-    description,
-    githubLink,
-    publicationLink,
-    documents,
-    technologies,
-    skills,
-    keywords,
-    year,
-    department,
-    submissionDate,
-    faculty,
-    projectType,
+    id, projectTitle, students, description, githubLink, publicationLink, documents, technologies,
+    skills, keywords, year, department, submissionDate, faculty, projectType, status, viewCount, category
   } = project;
+  
+  useEffect(() => {
+    if (onView) onView(id);
+  }, [id, onView]);
   
   const canModify = useMemo(() => {
     if (!currentUserRegNo) return false;
@@ -62,33 +57,49 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit, onDelete, sh
   
   const studentNames = students.map(s => s.name).join(', ');
 
-  const projectDetailsString = JSON.stringify({
-    id: id,
-    title: project.projectTitle,
-    students: project.students.map(s => `${s.name} (${s.registrationNumber})`),
-    description: project.description,
-    github: project.githubLink,
-    publication: project.publicationLink,
-    documents: project.documents?.map(d => ({ name: d.name, url: d.url })) || [],
-    technologies: project.technologies || [],
-    skills: project.skills || [],
-    keywords: project.keywords || []
-  }, null, 2);
+  const projectUrl = `${window.location.origin}${window.location.pathname}?project=${id}`;
+  
+  const statusColorMap = {
+    'In Progress': 'bg-blue-100 text-blue-800',
+    'Completed': 'bg-emerald-100 text-emerald-800',
+    'On Hold': 'bg-gray-100 text-gray-800',
+  };
+  
+  const handleGetSummary = async () => {
+      if (summary) {
+          setSummary(null); // Allows toggling the summary off
+          return;
+      }
+      setIsSummaryLoading(true);
+      try {
+          const result = await summarizeProject(project);
+          setSummary(result);
+      } catch (error) {
+          setSummary("Failed to generate summary.");
+      } finally {
+          setIsSummaryLoading(false);
+      }
+  };
+
 
   return (
     <>
-      <div className="bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 ease-in-out flex flex-col h-full overflow-hidden border border-gray-200 relative group">
+      <div className="bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out flex flex-col h-full overflow-hidden border border-gray-200 relative group group-hover:scale-[1.02]">
         {showQrOnHover && (
           <div className="absolute inset-0 bg-white bg-opacity-95 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 p-4">
               <div className="p-4 bg-white rounded-lg border border-gray-200 shadow-xl text-center">
                     <h4 className="text-base font-bold text-gray-800 mb-3 max-w-[150px] break-words">{projectTitle}</h4>
-                    <QRCodeSVG value={projectDetailsString} size={150} />
+                    <QRCodeSVG value={projectUrl} size={150} />
               </div>
           </div>
         )}
         <div className="p-6 flex-grow">
-          <div className="flex justify-between items-start mb-2">
-            <span className="inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-1 rounded-full">{department}</span>
+          <div className="flex justify-between items-start mb-3 gap-2 flex-wrap">
+            <div className="flex gap-2 flex-wrap items-center">
+              <span className="inline-block bg-sky-100 text-sky-800 text-xs font-semibold px-2.5 py-1 rounded-full">{department}</span>
+              <span className={`inline-block text-xs font-semibold px-2.5 py-1 rounded-full ${statusColorMap[status]}`}>{status}</span>
+              <span className="inline-block bg-orange-100 text-orange-800 text-xs font-semibold px-2.5 py-1 rounded-full">{category}</span>
+            </div>
             <span className={`inline-block text-xs font-semibold px-2.5 py-1 rounded-full ${projectType === 'College' ? 'bg-green-100 text-green-800' : 'bg-purple-100 text-purple-800'}`}>{projectType}</span>
           </div>
           <h3 className="text-xl font-bold text-gray-900 mb-2">{projectTitle}</h3>
@@ -100,6 +111,19 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit, onDelete, sh
 
           <p className="text-gray-700 text-sm leading-relaxed flex-grow mb-4">{description}</p>
           
+          {isSummaryLoading && (
+            <div className="p-3 bg-gray-50 rounded-md text-sm text-gray-600 flex items-center mb-4">
+                <LoaderCircle size={16} className="mr-2 animate-spin"/>
+                Generating AI summary...
+            </div>
+          )}
+
+          {summary && !isSummaryLoading && (
+            <div className="p-3 bg-indigo-50 border-l-4 border-indigo-400 rounded-r-md text-sm text-gray-800 mb-4 italic">
+                {summary}
+            </div>
+          )}
+
           {technologies && technologies.length > 0 && (
             <div className="mb-4">
                 <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Technology/Components Used</h4>
@@ -151,7 +175,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit, onDelete, sh
                     href={doc.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center text-xs text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                    className="flex items-center text-xs text-[#192F59] hover:text-[#101f3c] hover:underline transition-colors"
                     >
                     {getFileIcon(doc.name)}
                     <span className="truncate">{doc.name}</span>
@@ -160,40 +184,37 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit, onDelete, sh
                 </div>
             </div>
           )}
-          <div className="flex items-center text-xs text-gray-500 mb-4">
-            <Calendar size={14} className="mr-2"/>
-            Submitted: {formattedDate}
+          <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
+            <div className="flex items-center">
+              <Calendar size={14} className="mr-2"/>
+              Submitted: {formattedDate}
+            </div>
+            <div className="flex items-center" title={`${viewCount || 0} views`}>
+              <Eye size={14} className="mr-1.5" />
+              {viewCount || 0}
+            </div>
           </div>
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               {githubLink && ( <a href={githubLink} target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-gray-900 transition-colors"><Github size={22} /></a> )}
-              {publicationLink && ( <a href={publicationLink} target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-blue-600 transition-colors"><FileText size={22} /></a> )}
+              {publicationLink && ( <a href={publicationLink} target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-[#192F59] transition-colors"><FileText size={22} /></a> )}
             </div>
             <div className="flex items-center space-x-2">
+               <button
+                  onClick={handleGetSummary}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-700 bg-indigo-100 rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all"
+                  disabled={isSummaryLoading}
+                  aria-live="polite"
+                >
+                  {isSummaryLoading ? <LoaderCircle size={14} className="animate-spin" /> : <Sparkles size={14} />}
+                  {summary ? 'Hide' : 'AI Summary'}
+                </button>
               {canModify && onEdit && (
-                <button
-                  onClick={() => onEdit(project)}
-                  className="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all"
-                >
-                  <Pencil size={14} />
-                  Edit
-                </button>
+                <button onClick={() => onEdit(project)} className="p-2 text-gray-500 bg-gray-100 rounded-md hover:bg-gray-200 hover:text-gray-800 transition-all"><Pencil size={16} /></button>
               )}
-              <button
-                onClick={() => setIsShareModalOpen(true)}
-                className="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all"
-              >
-                <Share2 size={14} />
-                Share
-              </button>
+               <button onClick={() => setIsShareModalOpen(true)} className="p-2 text-gray-500 bg-gray-100 rounded-md hover:bg-gray-200 hover:text-gray-800 transition-all"><Share2 size={16} /></button>
               {canModify && onDelete && (
-                <button
-                  onClick={() => onDelete(project.id)}
-                  className="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold text-red-700 bg-red-100 rounded-md hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all"
-                >
-                  <Trash2 size={14} />
-                  Delete
-                </button>
+                <button onClick={() => onDelete(project.id)} className="p-2 text-red-600 bg-red-100 rounded-md hover:bg-red-200 hover:text-red-800 transition-all"><Trash2 size={16} /></button>
               )}
             </div>
           </div>

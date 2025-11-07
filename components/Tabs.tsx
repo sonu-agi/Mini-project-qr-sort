@@ -17,7 +17,7 @@ const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, setActiveTab }) => {
             onClick={() => setActiveTab(tab)}
             className={`${
               activeTab === tab
-                ? 'border-blue-500 text-blue-600'
+                ? 'border-[#192F59] text-[#192F59]'
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
             } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors focus:outline-none`}
             aria-current={activeTab === tab ? 'page' : undefined}

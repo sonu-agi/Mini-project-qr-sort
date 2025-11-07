@@ -2,8 +2,6 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { Project } from '../types';
 
 if (!process.env.API_KEY) {
-  // In a real app, you'd want to handle this more gracefully.
-  // For this example, we'll throw an error if the key is missing.
   throw new Error("API_KEY environment variable not set.");
 }
 
@@ -19,35 +17,31 @@ export async function selectBestProjects(projects: Project[]): Promise<BestProje
     return [];
   }
   
-  // If there are 3 or fewer projects, just return them all with a simple justification.
   if (projects.length <= 3) {
     return projects.map(p => ({
         projectId: p.id,
-        justification: "Selected as one of the top entries from a small pool of submissions."
+        justification: "Selected as one of the top entries from a small pool of high-quality submissions."
     }));
   }
 
   const projectDetails = projects.map(p => {
-    const studentNames = p.students.map(s => s.name).join(', ');
-    const facultyNames = p.faculty.map(f => f.name).join(', ') || 'None';
-    const studentYear = p.year;
-    const technologies = p.technologies?.join(', ') || 'Not specified';
-    const skills = p.skills?.join(', ') || 'Not specified';
-    const keywords = p.keywords?.join(', ') || 'Not specified';
-    return `ID: ${p.id}\nTitle: ${p.projectTitle}\nStudents: ${studentNames} (Year: ${studentYear})\nFaculty Advisors: ${facultyNames}\nDescription: ${p.description}\nTechnologies: ${technologies}\nSkills: ${skills}\nKeywords: ${keywords}`;
+    return `ID: ${p.id}\nTitle: ${p.projectTitle}\nCategory: ${p.category}\nDescription: ${p.description}\nTechnologies: ${p.technologies?.join(', ') || 'Not specified'}`;
   }).join('\n---\n');
 
   const prompt = `
-    You are an expert engineering professor tasked with evaluating student projects.
-    From the following list of projects, select the top 3.
-    Your selection should be based on a holistic view of the project, including perceived innovation, potential impact, clarity of the description, technical skills and technologies demonstrated, student experience (e.g., a final year project might be more advanced), and the presence of faculty guidance.
+    You are an expert engineering professor and technology evangelist at a prestigious tech institute. You are tasked with selecting the top 3 projects from a list of submissions.
     
-    Provide a brief, one-sentence justification for why each of the top 3 projects was chosen.
-    
-    Here is the list of projects:
+    Your selection criteria must be multi-faceted. Prioritize projects based on:
+    1.  **Innovation & Novelty:** Does the project introduce a new idea or a creative solution to an existing problem?
+    2.  **Technical Complexity:** Assess the difficulty suggested by the technologies used (e.g., Deep Learning, LLVM are generally more complex than basic web dev).
+    3.  **Potential Impact:** Could this project have real-world applications, be published, or be developed into a startup?
+    4.  **Execution & Clarity:** How well is the project described? A clear description suggests a well-understood project.
+    5.  **Cross-Disciplinary Nature:** Give extra points to projects that combine knowledge from different fields (e.g., Mechanical and IT).
+
+    Here is the list of projects to evaluate:
     ${projectDetails}
     
-    Return your answer in the specified JSON format.
+    Return your answer in the specified JSON format. For each of the top 3 projects, provide a one-sentence justification that highlights the primary reason for its selection (e.g., "for its innovative application of computer vision in robotics.").
   `;
   
   try {
@@ -79,17 +73,36 @@ export async function selectBestProjects(projects: Project[]): Promise<BestProje
     const jsonText = response.text.trim();
     const result = JSON.parse(jsonText) as BestProjectSelection[];
     
-    // Ensure we don't return more than 3 projects
     return result.slice(0, 3);
     
   } catch (error) {
-    console.error("Error calling Gemini API:", error);
-    // Fallback: if Gemini fails, randomly select up to 3 projects.
-    // This provides graceful degradation.
+    console.error("Error calling Gemini API for project selection:", error);
     const shuffled = [...projects].sort(() => 0.5 - Math.random());
     return shuffled.slice(0, 3).map(p => ({
         projectId: p.id,
         justification: "Selected due to an AI processing error. This is a top project."
     }));
+  }
+}
+
+export async function summarizeProject(project: Project): Promise<string> {
+  const projectDetails = `Title: ${project.projectTitle}\nDescription: ${project.description}\nTechnologies: ${project.technologies?.join(', ') || 'N/A'}`;
+
+  const prompt = `
+    You are a technical writer. Create a concise, engaging, two-sentence summary for the following student project. The first sentence should state what the project is, and the second should highlight its key technology or potential impact.
+    
+    Project Details:
+    ${projectDetails}
+  `;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: prompt,
+    });
+    return response.text.trim();
+  } catch (error) {
+    console.error("Error calling Gemini API for summary:", error);
+    return "Could not generate summary at this time.";
   }
 }
