@@ -43,6 +43,8 @@ export interface Project {
   status: ProjectStatus;
   category: ProjectCategory;
   viewCount?: number;
+  verified?: boolean;
+  verifiedBy?: string;
 }
 
 export interface FilterOptions {

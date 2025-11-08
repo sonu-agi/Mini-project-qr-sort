@@ -45,7 +45,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit, onDelete, on
   const {
     id, projectTitle, students, description, githubLink, publicationLink, documents, technologies,
     skills, keywords, year, department, submissionDate, faculty, projectType, status, viewCount, category,
-    isVerified, verifiedBy
+    verified, verifiedBy
   } = project;
   
   useEffect(() => {
@@ -110,6 +110,10 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit, onDelete, on
                     </button>
                     <h4 className="text-base font-bold text-gray-800 mb-3 max-w-[150px] break-words">{projectTitle}</h4>
                     <QRCodeSVG value={projectUrl} size={150} />
+                    <button onClick={handleCopyLink} title="Copy project link" className="mt-4 w-full flex items-center justify-center gap-2 px-3 py-1.5 text-xs font-semibold text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all">
+                        {copySuccess ? <Check size={14} /> : <Copy size={14} />}
+                        {copySuccess ? 'Copied!' : 'Copy Link'}
+                    </button>
               </div>
           </div>
         )}
@@ -124,7 +128,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit, onDelete, on
           </div>
           <h3 className="text-xl font-bold text-gray-900 mb-2 flex items-center gap-2">
             {projectTitle}
-            {isVerified && (
+            {verified && (
               <div className="group relative">
                 <ShieldCheck size={20} className="text-green-500 flex-shrink-0" />
                 <span className="absolute bottom-full mb-2 w-max px-2 py-1 bg-gray-800 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
@@ -255,9 +259,9 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit, onDelete, on
                   {summary ? 'Hide' : 'AI Summary'}
                 </button>
               {canModify && onEdit && (
-                <button onClick={() => onEdit(project)} className="p-2 text-gray-500 bg-gray-100 rounded-md hover:bg-gray-200 hover:text-gray-800 transition-all"><Pencil size={16} /></button>
+                <button onClick={() => onEdit(project)} title="Edit project" className="p-2 text-gray-500 bg-gray-100 rounded-md hover:bg-gray-200 hover:text-gray-800 transition-all"><Pencil size={16} /></button>
               )}
-              {canVerify && !isVerified && onVerify && (
+              {canVerify && !verified && onVerify && (
                 <button onClick={() => onVerify(project.id, currentUserFacultyName)} className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-green-700 bg-green-100 rounded-md hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all">
                   <CheckCircle size={14} /> Verify
                 </button>
@@ -265,12 +269,12 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit, onDelete, on
                <button onClick={handleCopyLink} title="Copy project link" className="p-2 text-gray-500 bg-gray-100 rounded-md hover:bg-gray-200 hover:text-gray-800 transition-all">
                  {copySuccess ? <Check size={16} className="text-green-600" /> : <Copy size={16} />}
                </button>
-               <button onClick={() => setIsShareModalOpen(true)} className="p-2 text-gray-500 bg-gray-100 rounded-md hover:bg-gray-200 hover:text-gray-800 transition-all"><Share2 size={16} /></button>
-               <button onClick={() => setIsQrVisible(!isQrVisible)} className="p-2 text-gray-500 bg-gray-100 rounded-md hover:bg-gray-200 hover:text-gray-800 transition-all">
+               <button onClick={() => setIsShareModalOpen(true)} title="Share project" className="p-2 text-gray-500 bg-gray-100 rounded-md hover:bg-gray-200 hover:text-gray-800 transition-all"><Share2 size={16} /></button>
+               <button onClick={() => setIsQrVisible(!isQrVisible)} title={isQrVisible ? 'Hide QR code' : 'Show QR code'} className="p-2 text-gray-500 bg-gray-100 rounded-md hover:bg-gray-200 hover:text-gray-800 transition-all">
                 {isQrVisible ? <EyeOff size={16} /> : <Eye size={16} />}
                </button>
               {canModify && onDelete && (
-                <button onClick={() => onDelete(project.id)} className="p-2 text-red-600 bg-red-100 rounded-md hover:bg-red-200 hover:text-red-800 transition-all"><Trash2 size={16} /></button>
+                <button onClick={() => onDelete(project.id)} title="Delete project" className="p-2 text-red-600 bg-red-100 rounded-md hover:bg-red-200 hover:text-red-800 transition-all"><Trash2 size={16} /></button>
               )}
             </div>
           </div>
