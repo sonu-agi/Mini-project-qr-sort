@@ -137,7 +137,7 @@ const BestProjects: React.FC<BestProjectsProps> = ({ allProjects, onView }) => {
                 const justification = result.justifications.find(j => j.projectId === project.id)?.justification;
                 return (
                   <div key={project.id} className="flex flex-col">
-                    <ProjectCard project={project} currentUserRegNo={''} onView={onView} />
+                    <ProjectCard project={project} currentUserRegNo={''} currentUserFacultyName={''} onView={onView} />
                     {justification && (
                       <div className="bg-gray-50 border-t-4 border-[#192F59] p-4 mt-[-1px] rounded-b-xl">
                         <p className="text-sm text-gray-900"><strong className="font-semibold">AI Justification:</strong> {justification}</p>

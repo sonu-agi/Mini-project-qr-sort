@@ -162,7 +162,7 @@ const ProjectIdeaGenerator: React.FC<ProjectIdeaGeneratorProps> = ({ allProjects
                        <div className="bg-emerald-50 border-l-4 border-emerald-400 p-3 rounded-t-lg">
                         <p className="text-sm text-emerald-900"><strong className="font-semibold">AI Recommendation:</strong> {suggestion.reason}</p>
                        </div>
-                       <ProjectCard project={project} currentUserRegNo={currentUserRegNo} onView={onView} />
+                       <ProjectCard project={project} currentUserRegNo={currentUserRegNo} currentUserFacultyName={''} onView={onView} />
                      </div>
                    );
                  })}

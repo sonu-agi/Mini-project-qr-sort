@@ -7,11 +7,11 @@ interface ProjectListProps {
   onEdit?: (project: Project) => void;
   onDelete?: (id: string) => void;
   onView?: (id: string) => void;
-  showQrOnHover?: boolean;
   currentUserRegNo: string;
+  currentUserFacultyName: string;
 }
 
-const ProjectList: React.FC<ProjectListProps> = ({ projects, onEdit, onDelete, showQrOnHover, currentUserRegNo, onView }) => {
+const ProjectList: React.FC<ProjectListProps> = ({ projects, onEdit, onDelete, currentUserRegNo, currentUserFacultyName, onView }) => {
   if (projects.length === 0) {
     return (
       <div className="text-center py-16">
@@ -24,7 +24,7 @@ const ProjectList: React.FC<ProjectListProps> = ({ projects, onEdit, onDelete, s
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       {projects.map(project => (
-        <ProjectCard key={project.id} project={project} onEdit={onEdit} onDelete={onDelete} showQrOnHover={showQrOnHover} currentUserRegNo={currentUserRegNo} onView={onView} />
+        <ProjectCard key={project.id} project={project} onEdit={onEdit} onDelete={onDelete} currentUserRegNo={currentUserRegNo} currentUserFacultyName={currentUserFacultyName} onView={onView} />
       ))}
     </div>
   );

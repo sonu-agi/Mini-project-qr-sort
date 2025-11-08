@@ -74,10 +74,10 @@ const App: React.FC = () => {
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [activeTab, setActiveTab] = useState<Tab>(Tab.ALL_PROJECTS);
-  const [showQrOnHover, setShowQrOnHover] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOption, setSortOption] = useState<SortOption>('newest');
   const [currentUserRegNo, setCurrentUserRegNo] = useState<string>('');
+  const [currentUserFacultyName, setCurrentUserFacultyName] = useState<string>('');
   const [loginInput, setLoginInput] = useState<string>('');
   const [viewedSession, setViewedSession] = useState(new Set<string>());
 
@@ -166,13 +166,13 @@ const App: React.FC = () => {
         return (
           <>
             <FilterControls filters={filters} setFilters={setFilters} sortOption={sortOption} setSortOption={setSortOption} />
-            <ProjectList projects={sortedAndFilteredProjects} onEdit={handleOpenEditForm} onDelete={handleDeleteProject} showQrOnHover={showQrOnHover} currentUserRegNo={currentUserRegNo} onView={handleIncrementViewCount} />
+            <ProjectList projects={sortedAndFilteredProjects} onEdit={handleOpenEditForm} onDelete={handleDeleteProject} currentUserRegNo={currentUserRegNo} currentUserFacultyName={currentUserFacultyName} onView={handleIncrementViewCount} />
           </>
         );
       case Tab.RECENT:
-        return <ProjectList projects={recentProjects} onEdit={handleOpenEditForm} onDelete={handleDeleteProject} showQrOnHover={showQrOnHover} currentUserRegNo={currentUserRegNo} onView={handleIncrementViewCount} />;
+        return <ProjectList projects={recentProjects} onEdit={handleOpenEditForm} onDelete={handleDeleteProject} currentUserRegNo={currentUserRegNo} currentUserFacultyName={currentUserFacultyName} onView={handleIncrementViewCount} />;
       case Tab.MOST_VIEWED:
-        return <ProjectList projects={mostViewedProjects} onEdit={handleOpenEditForm} onDelete={handleDeleteProject} showQrOnHover={showQrOnHover} currentUserRegNo={currentUserRegNo} onView={handleIncrementViewCount} />;
+        return <ProjectList projects={mostViewedProjects} onEdit={handleOpenEditForm} onDelete={handleDeleteProject} currentUserRegNo={currentUserRegNo} currentUserFacultyName={currentUserFacultyName} onView={handleIncrementViewCount} />;
       case Tab.BEST_PROJECTS:
         return <BestProjects allProjects={projects} onView={handleIncrementViewCount} />;
       case Tab.AI_IDEA_HUB:
@@ -180,7 +180,7 @@ const App: React.FC = () => {
       default:
         return null;
     }
-  }, [activeTab, filters, sortedAndFilteredProjects, recentProjects, mostViewedProjects, projects, showQrOnHover, sortOption, currentUserRegNo, handleIncrementViewCount]);
+  }, [activeTab, filters, sortedAndFilteredProjects, recentProjects, mostViewedProjects, projects, sortOption, currentUserRegNo, currentUserFacultyName, handleIncrementViewCount]);
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -195,27 +195,6 @@ const App: React.FC = () => {
           <div>
             <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-2">Student Project Showcase</h1>
             <p className="text-gray-600">Explore, share, and get inspired by projects from our talented students.</p>
-          </div>
-          <div className="flex items-center space-x-2 bg-white p-2 rounded-lg shadow-sm border flex-shrink-0">
-            <label htmlFor="qr-toggle" className="text-sm font-medium text-gray-700 cursor-pointer select-none">
-              Show QR on Hover
-            </label>
-            <button
-              role="switch"
-              aria-checked={showQrOnHover}
-              id="qr-toggle"
-              onClick={() => setShowQrOnHover(!showQrOnHover)}
-              className={`${
-                  showQrOnHover ? 'bg-[#192F59]' : 'bg-gray-200'
-              } relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#192F59] focus:ring-offset-2`}
-            >
-              <span
-                aria-hidden="true"
-                className={`${
-                showQrOnHover ? 'translate-x-5' : 'translate-x-0'
-                } pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`}
-              />
-            </button>
           </div>
         </div>
 
