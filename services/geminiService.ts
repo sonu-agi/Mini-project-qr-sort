@@ -70,6 +70,9 @@ export async function selectBestProjects(projects: Project[]): Promise<BestProje
       }
     });
 
+    if (!response.text) {
+      throw new Error("Received an empty response from the AI.");
+    }
     const jsonText = response.text.trim();
     const result = JSON.parse(jsonText) as BestProjectSelection[];
     
@@ -100,6 +103,9 @@ export async function summarizeProject(project: Project): Promise<string> {
       model: "gemini-2.5-flash",
       contents: prompt,
     });
+    if (!response.text) {
+      return "Could not generate summary at this time.";
+    }
     return response.text.trim();
   } catch (error) {
     console.error("Error calling Gemini API for summary:", error);
@@ -174,6 +180,9 @@ export async function generateProjectIdeas(
       }
     });
     
+    if (!response.text) {
+      throw new Error("Received an empty response from the AI for project ideas.");
+    }
     const jsonText = response.text.trim();
     return JSON.parse(jsonText) as IdeaGenerationResult;
 

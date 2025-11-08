@@ -64,7 +64,8 @@ const Chatbot: React.FC<ChatbotProps> = ({ allProjects }) => {
 
         try {
             const response = await chat.sendMessage({ message: input });
-            const botMessage: Message = { sender: 'bot', text: response.text };
+            const responseText = response.text;
+            const botMessage: Message = { sender: 'bot', text: responseText ?? "Sorry, I couldn't process that. Please try again." };
             setMessages(prev => [...prev, botMessage]);
         } catch (error) {
             console.error("Error sending message to Gemini:", error);
