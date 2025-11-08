@@ -9,6 +9,7 @@ export default defineConfig(({ mode }) => {
   // Set the third parameter to '' to load all env regardless of the `VITE_` prefix.
   const env = loadEnv(mode, cwd(), '');
   return {
+    base: '/Mini-project-qr-sort/',
     define: {
       // This makes the API_KEY available as process.env.API_KEY in your app
       'process.env.API_KEY': JSON.stringify(env.API_KEY)
