@@ -1,17 +1,20 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Project } from '../types';
-import { Github, FileText, Share2, Calendar, Pencil, Users, UserCheck, Presentation, FileSpreadsheet, File, Trash2, Eye, Sparkles, LoaderCircle } from 'lucide-react';
+import { Github, FileText, Share2, Calendar, Pencil, Users, UserCheck, Presentation, FileSpreadsheet, File, Trash2, Eye, EyeOff, Sparkles, LoaderCircle, CheckCircle, ShieldCheck, X, Copy, Check } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import ShareModal from './ShareModal';
 import { summarizeProject } from '../services/geminiService';
+
+const BASE_URL = 'https://sonu-agi.github.io/Mini-project-qr-sort/';
 
 interface ProjectCardProps {
   project: Project;
   onEdit?: (project: Project) => void;
   onDelete?: (id: string) => void;
   onView?: (id: string) => void;
-  showQrOnHover?: boolean;
+  onVerify?: (id: string, facultyName: string) => void;
   currentUserRegNo: string;
+  currentUserFacultyName: string;
 }
 
 const getFileIcon = (fileName: string): React.ReactNode => {
@@ -32,14 +35,17 @@ const getFileIcon = (fileName: string): React.ReactNode => {
     }
 };
 
-const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit, onDelete, showQrOnHover, currentUserRegNo, onView }) => {
+const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit, onDelete, onView, onVerify, currentUserRegNo, currentUserFacultyName }) => {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isQrVisible, setIsQrVisible] = useState(false);
   const [summary, setSummary] = useState<string | null>(null);
   const [isSummaryLoading, setIsSummaryLoading] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
 
   const {
     id, projectTitle, students, description, githubLink, publicationLink, documents, technologies,
-    skills, keywords, year, department, submissionDate, faculty, projectType, status, viewCount, category
+    skills, keywords, year, department, submissionDate, faculty, projectType, status, viewCount, category,
+    isVerified, verifiedBy
   } = project;
   
   useEffect(() => {
@@ -51,12 +57,25 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit, onDelete, sh
     return project.students.some(s => s.registrationNumber.toUpperCase() === currentUserRegNo.toUpperCase());
   }, [project.students, currentUserRegNo]);
 
+  const canVerify = useMemo(() => {
+    if (!currentUserFacultyName || !onVerify) return false;
+    return project.faculty.some(f => f.name === currentUserFacultyName);
+  }, [currentUserFacultyName, project.faculty, onVerify]);
+
+
   const formattedDate = submissionDate.toLocaleDateString('en-US', {
     year: 'numeric', month: 'short', day: 'numeric'
   });
   
-  const projectUrl = `${window.location.origin}${window.location.pathname}?project=${id}`;
+  const projectUrl = `${BASE_URL}?project=${id}`;
   
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(projectUrl).then(() => {
+        setCopySuccess(true);
+        setTimeout(() => setCopySuccess(false), 2000);
+    });
+  };
+
   const statusColorMap = {
     'In Progress': 'bg-blue-100 text-blue-800',
     'Completed': 'bg-emerald-100 text-emerald-800',
@@ -82,10 +101,13 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit, onDelete, sh
 
   return (
     <>
-      <div className="bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out flex flex-col h-full overflow-hidden border border-gray-200 relative group group-hover:scale-[1.02]">
-        {showQrOnHover && (
-          <div className="absolute inset-0 bg-white bg-opacity-95 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 p-4">
-              <div className="p-4 bg-white rounded-lg border border-gray-200 shadow-xl text-center">
+      <div className="bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out flex flex-col h-full overflow-hidden border border-gray-200 relative hover:scale-[1.02]">
+        {isQrVisible && (
+          <div className="absolute inset-0 bg-white bg-opacity-95 flex items-center justify-center opacity-100 transition-opacity duration-300 z-20 p-4">
+              <div className="p-4 bg-white rounded-lg border border-gray-200 shadow-xl text-center relative">
+                    <button onClick={() => setIsQrVisible(false)} className="absolute -top-3 -right-3 p-1.5 bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 focus:outline-none ring-2 ring-white">
+                        <X size={16} />
+                    </button>
                     <h4 className="text-base font-bold text-gray-800 mb-3 max-w-[150px] break-words">{projectTitle}</h4>
                     <QRCodeSVG value={projectUrl} size={150} />
               </div>
@@ -100,7 +122,17 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit, onDelete, sh
             </div>
             <span className={`inline-block text-xs font-semibold px-2.5 py-1 rounded-full ${projectType === 'College' ? 'bg-green-100 text-green-800' : 'bg-purple-100 text-purple-800'}`}>{projectType}</span>
           </div>
-          <h3 className="text-xl font-bold text-gray-900 mb-2">{projectTitle}</h3>
+          <h3 className="text-xl font-bold text-gray-900 mb-2 flex items-center gap-2">
+            {projectTitle}
+            {isVerified && (
+              <div className="group relative">
+                <ShieldCheck size={20} className="text-green-500 flex-shrink-0" />
+                <span className="absolute bottom-full mb-2 w-max px-2 py-1 bg-gray-800 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                  Verified by {verifiedBy}
+                </span>
+              </div>
+            )}
+          </h3>
           
           <div className="text-sm text-gray-600 mb-4">
             <div className="flex items-center font-medium mb-2">
@@ -225,7 +257,18 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit, onDelete, sh
               {canModify && onEdit && (
                 <button onClick={() => onEdit(project)} className="p-2 text-gray-500 bg-gray-100 rounded-md hover:bg-gray-200 hover:text-gray-800 transition-all"><Pencil size={16} /></button>
               )}
+              {canVerify && !isVerified && onVerify && (
+                <button onClick={() => onVerify(project.id, currentUserFacultyName)} className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-green-700 bg-green-100 rounded-md hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all">
+                  <CheckCircle size={14} /> Verify
+                </button>
+              )}
+               <button onClick={handleCopyLink} title="Copy project link" className="p-2 text-gray-500 bg-gray-100 rounded-md hover:bg-gray-200 hover:text-gray-800 transition-all">
+                 {copySuccess ? <Check size={16} className="text-green-600" /> : <Copy size={16} />}
+               </button>
                <button onClick={() => setIsShareModalOpen(true)} className="p-2 text-gray-500 bg-gray-100 rounded-md hover:bg-gray-200 hover:text-gray-800 transition-all"><Share2 size={16} /></button>
+               <button onClick={() => setIsQrVisible(!isQrVisible)} className="p-2 text-gray-500 bg-gray-100 rounded-md hover:bg-gray-200 hover:text-gray-800 transition-all">
+                {isQrVisible ? <EyeOff size={16} /> : <Eye size={16} />}
+               </button>
               {canModify && onDelete && (
                 <button onClick={() => onDelete(project.id)} className="p-2 text-red-600 bg-red-100 rounded-md hover:bg-red-200 hover:text-red-800 transition-all"><Trash2 size={16} /></button>
               )}
