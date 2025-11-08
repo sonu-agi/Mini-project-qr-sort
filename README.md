@@ -117,15 +117,16 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 
 ## Technology Stack
-*Frontend Framework:* React with TypeScript
 
-*Styling:* Tailwind CSS for a responsive, utility-first design.
+- *Frontend Framework:* React with TypeScript
 
-*AI Integration:* @google/genai library for all interactions with the Google Gemini API.
+- *Styling:* Tailwind CSS for a responsive, utility-first design.
 
-*UI Components:* lucide-react for icons and qrcode.react for QR code generation.
+- *AI Integration:* @google/genai library for all interactions with the Google Gemini API.
 
-*Architecture:* A modern, client-side application that runs directly in the browser without a backend or build step, using ES Modules and an importmap to load dependencies from a CDN.
+- *UI Components:* lucide-react for icons and qrcode.react for QR code generation.
+
+- *Architecture:* A modern, client-side application that runs directly in the browser without a backend or build step, using ES Modules and an importmap to load dependencies from a CDN.
 
 
 ## Run Locally
