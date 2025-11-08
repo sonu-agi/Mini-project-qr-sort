@@ -9,6 +9,7 @@ import BestProjects from './components/BestProjects';
 import Tabs from './components/Tabs';
 import Chatbot from './components/Chatbot';
 import Footer from './components/Footer';
+import ProjectIdeaGenerator from './components/ProjectIdeaGenerator';
 
 const filterAndSortProjects = (
   projects: Project[],
@@ -157,7 +158,7 @@ const App: React.FC = () => {
     return [...projects].sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0)).slice(0, 9);
   }, [projects]);
   
-  const TABS = [Tab.ALL_PROJECTS, Tab.RECENT, Tab.MOST_VIEWED, Tab.BEST_PROJECTS];
+  const TABS = [Tab.ALL_PROJECTS, Tab.RECENT, Tab.MOST_VIEWED, Tab.BEST_PROJECTS, Tab.AI_IDEA_HUB];
 
   const renderContent = useCallback(() => {
     switch(activeTab) {
@@ -174,6 +175,8 @@ const App: React.FC = () => {
         return <ProjectList projects={mostViewedProjects} onEdit={handleOpenEditForm} onDelete={handleDeleteProject} showQrOnHover={showQrOnHover} currentUserRegNo={currentUserRegNo} onView={handleIncrementViewCount} />;
       case Tab.BEST_PROJECTS:
         return <BestProjects allProjects={projects} onView={handleIncrementViewCount} />;
+      case Tab.AI_IDEA_HUB:
+        return <ProjectIdeaGenerator allProjects={projects} onView={handleIncrementViewCount} currentUserRegNo={currentUserRegNo} />;
       default:
         return null;
     }

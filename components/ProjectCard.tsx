@@ -55,8 +55,6 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit, onDelete, sh
     year: 'numeric', month: 'short', day: 'numeric'
   });
   
-  const studentNames = students.map(s => s.name).join(', ');
-
   const projectUrl = `${window.location.origin}${window.location.pathname}?project=${id}`;
   
   const statusColorMap = {
@@ -104,9 +102,19 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit, onDelete, sh
           </div>
           <h3 className="text-xl font-bold text-gray-900 mb-2">{projectTitle}</h3>
           
-          <div className="text-sm font-medium text-gray-600 mb-4 flex items-start">
-            <Users size={16} className="mr-2 mt-0.5 flex-shrink-0" />
-            <p>By {studentNames} (Year: {year})</p>
+          <div className="text-sm text-gray-600 mb-4">
+            <div className="flex items-center font-medium mb-2">
+                <Users size={16} className="mr-2 flex-shrink-0" />
+                <p>Team Members (Year: {year})</p>
+            </div>
+            <ul className="space-y-1.5 pl-4">
+                {students.map((student, index) => (
+                    <li key={index} className="text-gray-700">
+                        <span className="font-semibold">{student.name}</span>
+                        {student.contribution && <span className="text-gray-500 italic"> - {student.contribution}</span>}
+                    </li>
+                ))}
+            </ul>
           </div>
 
           <p className="text-gray-700 text-sm leading-relaxed flex-grow mb-4">{description}</p>

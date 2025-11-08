@@ -15,7 +15,7 @@ const twoMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 2, 10);
 export const MOCK_PROJECTS: Project[] = [
   {
     id: '1',
-    students: [{ name: 'Alice Johnson', registrationNumber: 'JIT2020CSE001', year: '4', department: 'CSE', section: 'A' }],
+    students: [{ name: 'Alice Johnson', registrationNumber: 'JIT2020CSE001', year: '4', department: 'CSE', section: 'A', contribution: 'Lead Developer & AI Model Training' }],
     projectTitle: 'AI-Powered Chess Engine',
     description: 'A deep learning model trained to play chess at a grandmaster level. Built with Python and TensorFlow.',
     githubLink: 'https://github.com/example/chess',
@@ -59,8 +59,8 @@ export const MOCK_PROJECTS: Project[] = [
   {
     id: '3',
     students: [
-        { name: 'Charlie Brown', registrationNumber: 'JIT2020MECH023', year: '4', department: 'MECH', section: 'A' },
-        { name: 'Diana Prince', registrationNumber: 'JIT2021IT045', year: '3', department: 'IT', section: 'C' }
+        { name: 'Charlie Brown', registrationNumber: 'JIT2020MECH023', year: '4', department: 'MECH', section: 'A', contribution: 'Designed and 3D-printed the mechanical arm.' },
+        { name: 'Diana Prince', registrationNumber: 'JIT2021IT045', year: '3', department: 'IT', section: 'C', contribution: 'Developed the computer vision sorting algorithm.' }
     ],
     projectTitle: 'Automated Robotic Arm',
     description: 'A 3D-printed robotic arm capable of sorting objects by color using computer vision. A cross-departmental effort.',
@@ -136,8 +136,8 @@ export const MOCK_PROJECTS: Project[] = [
    {
     id: '7',
     students: [
-        { name: 'Grace Hopper', registrationNumber: 'JIT2020CSE002', year: '4', department: 'CSE', section: 'A' },
-        { name: 'Henry Pym', registrationNumber: 'JIT2020CSE003', year: '4', department: 'CSE', section: 'A' }
+        { name: 'Grace Hopper', registrationNumber: 'JIT2020CSE002', year: '4', department: 'CSE', section: 'A', contribution: 'Designed the language syntax and lexical analyzer.' },
+        { name: 'Henry Pym', registrationNumber: 'JIT2020CSE003', year: '4', department: 'CSE', section: 'A', contribution: 'Implemented the parser and code generator using LLVM.' }
     ],
     projectTitle: 'Compiler for a new language',
     description: 'A fully functional compiler for a custom-designed programming language focused on parallel computing.',

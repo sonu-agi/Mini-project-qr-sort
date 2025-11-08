@@ -4,6 +4,7 @@ export interface Student {
   year: string;
   department: string;
   section: string;
+  contribution?: string;
 }
 
 export interface Faculty {
@@ -58,5 +59,24 @@ export enum Tab {
     ALL_PROJECTS = 'All Projects',
     RECENT = 'Recent Projects',
     MOST_VIEWED = 'Most Viewed',
-    BEST_PROJECTS = "Projects of the Month"
+    BEST_PROJECTS = "Projects of the Month",
+    AI_IDEA_HUB = "AI Idea Hub"
+}
+
+// Types for the AI Idea Generator
+export interface GeneratedIdea {
+  title: string;
+  description: string;
+  technologies: string[];
+  difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
+}
+
+export interface CollaborationSuggestion {
+  projectId: string;
+  reason: string;
+}
+
+export interface IdeaGenerationResult {
+  newIdeas: GeneratedIdea[];
+  collaborationSuggestions: CollaborationSuggestion[];
 }

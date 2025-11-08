@@ -1,5 +1,5 @@
 import { GoogleGenAI, Type } from "@google/genai";
-import { Project } from '../types';
+import { Project, IdeaGenerationResult } from '../types';
 
 if (!process.env.API_KEY) {
   throw new Error("API_KEY environment variable not set.");
@@ -104,5 +104,81 @@ export async function summarizeProject(project: Project): Promise<string> {
   } catch (error) {
     console.error("Error calling Gemini API for summary:", error);
     return "Could not generate summary at this time.";
+  }
+}
+
+export async function generateProjectIdeas(
+  userInput: { skills: string; interests: string; department: string },
+  projects: Project[]
+): Promise<IdeaGenerationResult> {
+
+  const projectSummaries = projects.map(p =>
+    `ID: ${p.id}, Title: "${p.projectTitle}", Description: "${p.description}", Current Team's Skills/Tech: ${[...(p.technologies || []), ...(p.skills || [])].join(', ')}`
+  ).join('\n---\n');
+
+  const prompt = `
+    You are an AI career counselor and project mentor at Jeppiaar Institute of Technology. A student from the ${userInput.department} department has come to you for guidance.
+
+    Student's Profile:
+    - Skills: ${userInput.skills}
+    - Interests: ${userInput.interests}
+
+    Your tasks are:
+    1.  Generate 3 unique and innovative project ideas tailored to this student's profile. The ideas should be relevant to their department and interests. For each idea, provide a title, a short description (2-3 sentences), a list of suggested technologies, and a difficulty level ('Beginner', 'Intermediate', or 'Advanced').
+    2.  Analyze the following list of existing projects. Identify up to 2 projects where this student's skills would be a valuable addition to the team. For each suggestion, provide the project ID and a brief, encouraging reason why they should consider joining. If no existing projects are a good fit, return an empty array for this part.
+
+    Existing Projects:
+    ${projectSummaries}
+
+    Provide the response in the specified JSON format.
+  `;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: prompt,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            newIdeas: {
+              type: Type.ARRAY,
+              description: "A list of new project ideas for the student.",
+              items: {
+                type: Type.OBJECT,
+                properties: {
+                  title: { type: Type.STRING },
+                  description: { type: Type.STRING },
+                  technologies: { type: Type.ARRAY, items: { type: Type.STRING } },
+                  difficulty: { type: Type.STRING, enum: ['Beginner', 'Intermediate', 'Advanced'] }
+                },
+                required: ["title", "description", "technologies", "difficulty"]
+              }
+            },
+            collaborationSuggestions: {
+              type: Type.ARRAY,
+              description: "A list of existing projects the student could collaborate on.",
+              items: {
+                type: Type.OBJECT,
+                properties: {
+                  projectId: { type: Type.STRING },
+                  reason: { type: Type.STRING }
+                },
+                required: ["projectId", "reason"]
+              }
+            }
+          },
+          required: ["newIdeas", "collaborationSuggestions"]
+        }
+      }
+    });
+    
+    const jsonText = response.text.trim();
+    return JSON.parse(jsonText) as IdeaGenerationResult;
+
+  } catch (error) {
+    console.error("Error calling Gemini API for project ideas:", error);
+    throw new Error("The AI failed to generate ideas. This could be due to a network issue or an API error. Please try again.");
   }
 }

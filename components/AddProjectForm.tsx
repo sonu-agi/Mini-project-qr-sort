@@ -20,7 +20,7 @@ const AddProjectForm: React.FC<ProjectFormProps> = ({ onSave, onClose, projectTo
   const [year, setYear] = useState(YEARS[0]);
   const [department, setDepartment] = useState(DEPARTMENTS[0]);
   const [section, setSection] = useState(SECTIONS[0]);
-  const [students, setStudents] = useState<Student[]>([{ name: '', registrationNumber: '', year: YEARS[0], department: DEPARTMENTS[0], section: SECTIONS[0] }]);
+  const [students, setStudents] = useState<Student[]>([{ name: '', registrationNumber: '', year: YEARS[0], department: DEPARTMENTS[0], section: SECTIONS[0], contribution: '' }]);
   const [faculty, setFaculty] = useState<Faculty[]>([]);
   const [documents, setDocuments] = useState<DocumentFile[]>([]);
   const [technologies, setTechnologies] = useState<string[]>([]);
@@ -57,7 +57,7 @@ const AddProjectForm: React.FC<ProjectFormProps> = ({ onSave, onClose, projectTo
     setStudents(newStudents);
   };
   
-  const addStudent = () => setStudents([...students, { name: '', registrationNumber: '', year: YEARS[0], department: DEPARTMENTS[0], section: SECTIONS[0] }]);
+  const addStudent = () => setStudents([...students, { name: '', registrationNumber: '', year: YEARS[0], department: DEPARTMENTS[0], section: SECTIONS[0], contribution: '' }]);
   const removeStudent = (index: number) => setStudents(students.filter((_, i) => i !== index));
 
   const handleFacultyChange = (index: number, field: keyof Faculty, value: string) => {
@@ -222,15 +222,33 @@ const AddProjectForm: React.FC<ProjectFormProps> = ({ onSave, onClose, projectTo
             <div className="space-y-4 border-b pb-6">
                <h3 className="text-lg font-semibold text-gray-700">Students *</h3>
                 {students.map((student, index) => (
-                    <div key={index} className="p-3 bg-gray-50 rounded-md border grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-3 items-end">
-                       <input value={student.name} onChange={(e) => handleStudentChange(index, 'name', e.target.value)} placeholder="Student Name" className="w-full border-gray-300 rounded-md shadow-sm md:col-span-2 bg-white text-gray-800" required />
-                       <input value={student.registrationNumber} onChange={(e) => handleStudentChange(index, 'registrationNumber', e.target.value)} placeholder="Reg. Number" className="w-full border-gray-300 rounded-md shadow-sm bg-white text-gray-800" required />
-                       <select value={student.year} onChange={(e) => handleStudentChange(index, 'year', e.target.value)} className="w-full border-gray-300 rounded-md shadow-sm bg-white text-gray-800"><option disabled>Year</option>{YEARS.map(y => <option key={y} value={y}>{y}</option>)}</select>
-                       <select value={student.department} onChange={(e) => handleStudentChange(index, 'department', e.target.value)} className="w-full border-gray-300 rounded-md shadow-sm bg-white text-gray-800"><option disabled>Dept</option>{DEPARTMENTS.map(d => <option key={d} value={d}>{d}</option>)}</select>
-                       <div className="flex items-center gap-2">
-                         <select value={student.section} onChange={(e) => handleStudentChange(index, 'section', e.target.value)} className="w-full border-gray-300 rounded-md shadow-sm bg-white text-gray-800"><option disabled>Sec</option>{SECTIONS.map(s => <option key={s} value={s}>{s}</option>)}</select>
-                         {students.length > 1 && <button type="button" onClick={() => removeStudent(index)} className="p-2 text-red-600 hover:bg-red-100 rounded-md"><Trash2 size={18} /></button>}
-                       </div>
+                    <div key={index} className="p-4 bg-gray-50 rounded-lg border space-y-3 relative">
+                        {students.length > 1 && 
+                            <button type="button" onClick={() => removeStudent(index)} className="absolute top-3 right-3 p-1.5 text-red-500 hover:bg-red-100 rounded-md">
+                                <Trash2 size={16} />
+                            </button>
+                        }
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <input value={student.name} onChange={(e) => handleStudentChange(index, 'name', e.target.value)} placeholder="Student Name *" className="w-full border-gray-300 rounded-md shadow-sm bg-white text-gray-800" required />
+                            <input value={student.registrationNumber} onChange={(e) => handleStudentChange(index, 'registrationNumber', e.target.value)} placeholder="Reg. Number *" className="w-full border-gray-300 rounded-md shadow-sm bg-white text-gray-800" required />
+                            <input 
+                                value={student.contribution || ''} 
+                                onChange={(e) => handleStudentChange(index, 'contribution', e.target.value)} 
+                                placeholder="Contribution (e.g., Frontend)" 
+                                className="w-full border-gray-300 rounded-md shadow-sm bg-white text-gray-800" 
+                            />
+                        </div>
+                        <div className="grid grid-cols-3 gap-4">
+                            <select value={student.year} onChange={(e) => handleStudentChange(index, 'year', e.target.value)} className="w-full border-gray-300 rounded-md shadow-sm bg-white text-gray-800">
+                                <option disabled value="">Year</option>{YEARS.map(y => <option key={y} value={y}>{y}</option>)}
+                            </select>
+                            <select value={student.department} onChange={(e) => handleStudentChange(index, 'department', e.target.value)} className="w-full border-gray-300 rounded-md shadow-sm bg-white text-gray-800">
+                                <option disabled value="">Department</option>{DEPARTMENTS.map(d => <option key={d} value={d}>{d}</option>)}
+                            </select>
+                            <select value={student.section} onChange={(e) => handleStudentChange(index, 'section', e.target.value)} className="w-full border-gray-300 rounded-md shadow-sm bg-white text-gray-800">
+                                <option disabled value="">Section</option>{SECTIONS.map(s => <option key={s} value={s}>{s}</option>)}
+                            </select>
+                        </div>
                     </div>
                 ))}
                 <button type="button" onClick={addStudent} className="flex items-center gap-2 text-sm font-medium text-[#192F59] hover:text-[#101f3c]"><Plus size={16} /> Add Student</button>
