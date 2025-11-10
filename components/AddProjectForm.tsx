@@ -7,9 +7,10 @@ interface ProjectFormProps {
   onSave: (project: Omit<Project, 'id'>, id?: string) => void;
   onClose: () => void;
   projectToEdit?: Project | null;
+  loggedInStudentRegNo: string; // Placeholder for the logged-in user's registration number
 }
 
-const AddProjectForm: React.FC<ProjectFormProps> = ({ onSave, onClose, projectToEdit }) => {
+const AddProjectForm: React.FC<ProjectFormProps> = ({ onSave, onClose, projectToEdit, loggedInStudentRegNo }) => {
   const [projectTitle, setProjectTitle] = useState('');
   const [description, setDescription] = useState('');
   const [githubLink, setGithubLink] = useState('');
@@ -100,6 +101,17 @@ const AddProjectForm: React.FC<ProjectFormProps> = ({ onSave, onClose, projectTo
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // TODO: Replace this with the actual logged-in user's registration number
+    const currentLoggedInStudentRegNo = loggedInStudentRegNo || '12345'; // Using a placeholder for now
+
+    const isUserInProject = students.some(student => student.registrationNumber === currentLoggedInStudentRegNo);
+
+    if (!isUserInProject) {
+      alert('You can only upload projects that you have worked on. Please make sure your registration number is listed in the students section.');
+      return;
+    }
+
     if (projectTitle && description && students.every(s => s.name && s.registrationNumber)) {
         const projectData = {
             projectTitle, description, githubLink, publicationLink, projectType, year, department, section,
@@ -136,7 +148,7 @@ const AddProjectForm: React.FC<ProjectFormProps> = ({ onSave, onClose, projectTo
                     placeholder={placeholder}
                     className="flex-grow border-gray-300 rounded-md shadow-sm focus:ring-[#192F59] focus:border-[#192F59] bg-white text-gray-800"
                 />
-                <button type="button" onClick={() => handlers.remove(index)} className="p-2 text-red-600 hover:bg-red-100 rounded-md">
+                <button type="button" onClick={() => handlers.remove(index)} className="p-2 text-red-600 hover:bg-red-100 rounded-md" aria-label={`Remove ${label.split('(')[0].trim()}`}>
                     <Trash2 size={18} />
                 </button>
             </div>
@@ -224,7 +236,7 @@ const AddProjectForm: React.FC<ProjectFormProps> = ({ onSave, onClose, projectTo
                 {students.map((student, index) => (
                     <div key={index} className="p-4 bg-gray-50 rounded-lg border space-y-3 relative">
                         {students.length > 1 && 
-                            <button type="button" onClick={() => removeStudent(index)} className="absolute top-3 right-3 p-1.5 text-red-500 hover:bg-red-100 rounded-md">
+                            <button type="button" onClick={() => removeStudent(index)} className="absolute top-3 right-3 p-1.5 text-red-500 hover:bg-red-100 rounded-md" aria-label="Remove student">
                                 <Trash2 size={16} />
                             </button>
                         }
@@ -261,7 +273,7 @@ const AddProjectForm: React.FC<ProjectFormProps> = ({ onSave, onClose, projectTo
                     <div key={index} className="p-3 bg-gray-50 rounded-md border grid grid-cols-[1fr_1fr_auto] gap-3 items-end">
                        <input value={f.name} onChange={(e) => handleFacultyChange(index, 'name', e.target.value)} placeholder="Faculty Name" className="w-full border-gray-300 rounded-md shadow-sm bg-white text-gray-800" />
                        <select value={f.department} onChange={(e) => handleFacultyChange(index, 'department', e.target.value)} className="w-full border-gray-300 rounded-md shadow-sm bg-white text-gray-800"><option disabled>Dept</option>{DEPARTMENTS.map(d => <option key={d} value={d}>{d}</option>)}</select>
-                       <button type="button" onClick={() => removeFaculty(index)} className="p-2 text-red-600 hover:bg-red-100 rounded-md"><Trash2 size={18} /></button>
+                       <button type="button" onClick={() => removeFaculty(index)} className="p-2 text-red-600 hover:bg-red-100 rounded-md" aria-label="Remove faculty advisor"><Trash2 size={18} /></button>
                     </div>
                 ))}
                 <button type="button" onClick={addFaculty} className="flex items-center gap-2 text-sm font-medium text-[#192F59] hover:text-[#101f3c]"><Plus size={16} /> Add Faculty Advisor</button>
@@ -274,7 +286,7 @@ const AddProjectForm: React.FC<ProjectFormProps> = ({ onSave, onClose, projectTo
                     <div key={index} className="p-3 bg-gray-50 rounded-md border grid grid-cols-1 md:grid-cols-[1fr_2fr_auto] gap-3 items-end">
                        <input value={doc.name} onChange={(e) => handleDocumentChange(index, 'name', e.target.value)} placeholder="Document Name (e.g., Abstract.pdf)" className="w-full border-gray-300 rounded-md shadow-sm bg-white text-gray-800" />
                        <input type="url" value={doc.url} onChange={(e) => handleDocumentChange(index, 'url', e.target.value)} placeholder="Document URL" className="w-full border-gray-300 rounded-md shadow-sm bg-white text-gray-800" />
-                       <button type="button" onClick={() => removeDocument(index)} className="p-2 text-red-600 hover:bg-red-100 rounded-md"><Trash2 size={18} /></button>
+                       <button type="button" onClick={() => removeDocument(index)} className="p-2 text-red-600 hover:bg-red-100 rounded-md" aria-label="Remove document"><Trash2 size={18} /></button>
                     </div>
                 ))}
                 <button type="button" onClick={addDocument} className="flex items-center gap-2 text-sm font-medium text-[#192F59] hover:text-[#101f3c]"><Plus size={16} /> Add Document</button>

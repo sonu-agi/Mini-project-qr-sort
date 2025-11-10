@@ -53,9 +53,14 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit, onDelete, on
   }, [id, onView]);
   
   const canModify = useMemo(() => {
-    if (!currentUserRegNo) return false;
-    return project.students.some(s => s.registrationNumber.toUpperCase() === currentUserRegNo.toUpperCase());
-  }, [project.students, currentUserRegNo]);
+    if (currentUserRegNo) {
+      return project.students.some(s => s.registrationNumber.toUpperCase() === currentUserRegNo.toUpperCase());
+    }
+    if (currentUserFacultyName) {
+      return project.faculty.some(f => f.name.toUpperCase() === currentUserFacultyName.toUpperCase());
+    }
+    return false;
+  }, [project.students, project.faculty, currentUserRegNo, currentUserFacultyName]);
 
   const canVerify = useMemo(() => {
     if (!currentUserFacultyName || !onVerify) return false;
@@ -105,7 +110,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit, onDelete, on
         {isQrVisible && (
           <div className="absolute inset-0 bg-white bg-opacity-95 flex items-center justify-center opacity-100 transition-opacity duration-300 z-20 p-4">
               <div className="p-4 bg-white rounded-lg border border-gray-200 shadow-xl text-center relative">
-                    <button onClick={() => setIsQrVisible(false)} className="absolute -top-3 -right-3 p-1.5 bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 focus:outline-none ring-2 ring-white">
+                    <button onClick={() => setIsQrVisible(false)} title="Close QR Code" className="absolute -top-3 -right-3 p-1.5 bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 focus:outline-none ring-2 ring-white">
                         <X size={16} />
                     </button>
                     <h4 className="text-base font-bold text-gray-800 mb-3 max-w-[150px] break-words">{projectTitle}</h4>

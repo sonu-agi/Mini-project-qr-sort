@@ -3,8 +3,8 @@ import { Project } from '../types';
 import { GoogleGenAI, Chat } from "@google/genai";
 import { MessageSquare, X, Send, User, Bot } from 'lucide-react';
 
-if (!process.env.API_KEY) {
-  throw new Error("API_KEY environment variable not set.");
+if (!import.meta.env.VITE_API_KEY) {
+  throw new Error("VITE_API_KEY environment variable not set.");
 }
 
 interface ChatbotProps {
@@ -33,7 +33,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ allProjects }) => {
 
             const systemInstruction = `You are a friendly and helpful 'Project Assistant' for the Jeppiaar Institute of Technology's student project showcase. Your goal is to answer questions about the projects listed below. Be concise and helpful. If you don't know the answer or a question is unrelated to the projects, politely say so. Here is the list of all projects:\n${projectDetails}`;
             
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+            const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_API_KEY });
             const newChat = ai.chats.create({
                 model: 'gemini-2.5-flash',
                 config: {

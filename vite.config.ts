@@ -11,8 +11,7 @@ export default defineConfig(({ mode }) => {
   return {
     base: '/Mini-project-qr-sort/',
     define: {
-      // This makes the API_KEY available as process.env.API_KEY in your app
-      'process.env.API_KEY': JSON.stringify(env.API_KEY)
+      'process.env': env
     },
     plugins: [react()],
   }

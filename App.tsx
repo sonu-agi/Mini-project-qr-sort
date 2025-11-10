@@ -10,6 +10,7 @@ import Tabs from './components/Tabs';
 import Chatbot from './components/Chatbot';
 import Footer from './components/Footer';
 import ProjectIdeaGenerator from './components/ProjectIdeaGenerator';
+import FloatingQrTools from './components/FloatingQrTools';
 
 const filterAndSortProjects = (
   projects: Project[],
@@ -79,6 +80,7 @@ const App: React.FC = () => {
   const [currentUserRegNo, setCurrentUserRegNo] = useState<string>('');
   const [currentUserFacultyName, setCurrentUserFacultyName] = useState<string>('');
   const [loginInput, setLoginInput] = useState<string>('');
+  const [passwordInput, setPasswordInput] = useState<string>('');
   const [viewedSession, setViewedSession] = useState(new Set<string>());
 
   const handleIncrementViewCount = useCallback((projectId: string) => {
@@ -138,7 +140,20 @@ const App: React.FC = () => {
   };
   
   const handleLogin = () => {
-    setCurrentUserRegNo(loginInput.trim().toUpperCase());
+    // For demo purposes, any password is "correct" if it's not empty
+    if (loginInput.trim() && passwordInput.trim()) {
+      const input = loginInput.trim();
+      // Simple check to differentiate between faculty name and student reg no
+      if (isNaN(parseInt(input.charAt(0)))) {
+        setCurrentUserFacultyName(input);
+        setCurrentUserRegNo('');
+      } else {
+        setCurrentUserRegNo(input.toUpperCase());
+        setCurrentUserFacultyName('');
+      }
+    } else {
+      alert("Please enter both username and password.");
+    }
   };
 
   const handleLogout = () => {
@@ -204,23 +219,30 @@ const App: React.FC = () => {
                     <p className="text-sm text-yellow-700">
                     <strong>Note for Demo:</strong> This application simulates user permissions. To test the edit/delete functionality, which would normally require a full login, please enter a Registration Number of a student from one of the projects below (e.g., 2106yydddnnn, where yy=year, ddd=dept code, nnn=roll no). This will grant you modification rights for that student's projects only.
                     </p>
-                    {!currentUserRegNo ? (
-                        <div className="mt-3 flex gap-2">
+                    {!currentUserRegNo && !currentUserFacultyName ? (
+                        <div className="mt-3 flex flex-col sm:flex-row gap-2">
                             <input 
                                 type="text"
                                 value={loginInput}
                                 onChange={(e) => setLoginInput(e.target.value)}
+                                placeholder="Reg No or Faculty Name"
+                                className="block w-full max-w-xs pl-3 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-[#192F59] focus:border-[#192F59] sm:text-sm"
+                            />
+                            <input 
+                                type="password"
+                                value={passwordInput}
+                                onChange={(e) => setPasswordInput(e.target.value)}
                                 onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
-                                placeholder="Enter Registration No."
+                                placeholder="Password"
                                 className="block w-full max-w-xs pl-3 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-[#192F59] focus:border-[#192F59] sm:text-sm"
                             />
                             <button onClick={handleLogin} className="px-4 py-2 text-sm font-semibold text-white bg-[#192F59] rounded-md hover:bg-[#101f3c]">
-                                Simulate Login
+                                Login
                             </button>
                         </div>
                     ) : (
                         <div className="mt-3 flex items-center gap-4">
-                            <p className="text-sm font-medium text-gray-800">Logged in as: <strong className="text-green-600">{currentUserRegNo}</strong></p>
+                            <p className="text-sm font-medium text-gray-800">Logged in as: <strong className="text-green-600">{currentUserRegNo || currentUserFacultyName}</strong></p>
                             <button onClick={handleLogout} className="text-sm font-medium text-[#192F59] hover:underline">
                                 Logout
                             </button>
@@ -242,9 +264,11 @@ const App: React.FC = () => {
           onSave={handleSaveProject}
           onClose={handleCloseForm}
           projectToEdit={editingProject}
+          loggedInStudentRegNo={currentUserRegNo}
         />
       )}
       <Chatbot allProjects={projects} />
+      <FloatingQrTools />
       <Footer />
     </div>
   );
